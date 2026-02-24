@@ -38,4 +38,18 @@ def cosine_similarity_loop(a, b):
 #slow loop for euuclindean
 
 def euclidean_distance_loop(a, b):
+    n = a.shape[0]
+    out = np.empty(n, dtype=np.float32)
+    for i in range(n):
+        out[i] = float(np.sqrt(np.sum(a[i] - b[i] ** 2)))
+    return out
+
+
+def flatten_embedding(images):  #flattens pizels and normalizes. image (N, H, W, C) returns (N, H*W*C)
+    n = images.shape[0]
+    flat = images.reshape(n, -1).astype(np.float32)
+    norm = np.linalg.norm(flat, axis=1, keepdims=True)
+    norm = np.where(norm == 0, 1e-10, norm)
+    return flat / norm
+
 
