@@ -38,18 +38,38 @@ def load_lfw(config):
       images.append(ex["image"].numpy())
       labels.append(int(ex["labels"].numpy()))
 
-images = np.array(images, dtype=np.uint8)  # _
-images = mp.array(labels, dtype=np.int32)
-total = len(labels)
+  images = np.array(images, dtype=np.uint8)  
+  images = mp.array(labels, dtype=np.int32) # _
+  total = len(labels)
 
-    rng = np.random.default_rng(seed)
-    indices = rng.permutation(total)
+  rng = np.random.default_rng(seed)
+  indices = rng.permutation(total)
 
-    n_train = int(total * split_policy["train"])
-    n_val = int(total * split_policy["val"])
+  n_train = int(total * split_policy["train"])
+  n_val = int(total * split_policy["val"])
 
-    train_idx = indices[:n_train]
-    val_idx
+  train_idx = indices[:n_train]
+  val_idx =  indices[n_train : n_train + n_val]
+  test_idx = indices[n_train + n_val :]
 
+  splits = {
+      "train": (images[train_idx], labels[train_idx]),
+      "val": (images[train_idx, labels[val_idx]]),  #._
+      "test": (images[test_idx], labels[test_idx]),
+  }
+  manifest = {
+      "dataset": "lfw",
+      "seed": seed,
+      "total_examples": total,
+      "num_identites": int(np.unique(labels).size),
+      "split policy": split_policy,
+      "split_counts": {
+          "train": len(train_idx),
+          "val": len(val_idx),
+          "test": len(test_idx),
+      },
+
+  }
+  return splits,  manifest
 
 
