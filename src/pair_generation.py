@@ -46,4 +46,20 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
     perm = rng.permutaion(len(pairs))
     return pairs[perm], pair_labels[perm]
 
-def save_pairs(pair, pair_labels, split_name, pair_dir):
+def save_pairs(pairs, pair_labels, split_name, pairs_dir):
+    out = Path(pairs_dir)  #saves pair and label as a .npy file
+    out.mkdir(parents=True, exist_ok=True)
+
+    np.save(out / f"{split_name}_pairs.npy", pairs)
+    np.save(out / f"{split_name}_labels.npy", pairs)
+
+    print(f"[{split_name}] {len(pairs)} pairs saved to {out}")
+    return {
+        "split": split_name,
+        "total_pairs": len(pairs),
+        "positive_pairs": int(pair_labels.sum()),
+        "negative_pairs": int((pair_labels == 0).sum()),
+
+    }
+
+def generate_all_splits()
