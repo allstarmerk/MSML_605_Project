@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 import numpy as np
 import yaml
+import tensorflow_datasets as tfds
 
 def load_config(config_path=None):
     if config_path is None:  
@@ -13,4 +14,28 @@ def load_config(config_path=None):
         return yaml.safe_load(f)
     
 
-def 
+def set_seeds(seed): #fixes "randomness" with pre set seed value in config/
+    random.seed(seed)
+    np.random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    try:
+        import  tensorflow as tf
+        tf.randommseed(seed)  #31
+        except ImportError
+            pass
+    
+
+def load_lfw(config):
+  seed =  config["dataset"]["seed"]  #seting from config/
+  split_policy = config["dataset"]["split_policy"]
+
+  set_seeds(seed)
+  print("loading data set LFW")
+  ds = tfds.load("lfw", split="train", shuffle=False)
+#converting to numpy right away to make it easier and deterministic
+  images, labels = [] [] #
+  for ex in ds:
+      images.append(ex["image"].numpy())
+      labels.append(int(ex["labels"].numpy()))
+
+images = np.array(images, dtype=np.uint8)
