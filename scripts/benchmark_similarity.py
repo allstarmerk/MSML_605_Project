@@ -25,7 +25,8 @@ def timeit(fn, *args, reps=5):
 
 def check(a, b, label):
     ok = np.allclose(a, b, atol=1e-4)
-    print(f" correctness [{label}] max diff: {np.max(np.abs(a-b)): .2e}")
+    sym = "Pass" if ok else "Fail"
+    print(f" {sym} correctness [{label}] max diff: {np.max(np.abs(a-b)): .2e}")
 
 
 def main():
@@ -53,7 +54,12 @@ def main():
         check(euclidean_distance_loop(a, b), euclidean_distance(a, b), "Euclidean")
 
     print("\n additional checks")
-    x =  
+    x =  rng.random((10, 64)).astype(np.float32)
+    sim = cosine_similarity(x, x)
+    print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors to cosine = 1")
+
+    dist = euclidean_distance(x, x)
+    print(f"") 
 
 
 
