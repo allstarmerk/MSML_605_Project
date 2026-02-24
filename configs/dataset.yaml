@@ -1,0 +1,21 @@
+#This is a config file that uses the typical 70/15/15 split 70% of training, 15% on valadation, and final 15 % on test set to report off of.
+# Data set settings instead of hard coding them. will have script call the config file for reproducability
+dataset:
+  name: lfw
+  seed: 42  #the random seed we are seting globaly for data set operations. Controls order images are shuffled before splitting
+  split_policy:  #change seed value above to get complettly diffrent train/split. need consistent seed to keep consistency. 
+    train: 0.70
+    val: 0.15
+    test: 0.15
+
+pairs:
+  num_pairs_per_split:
+    train: 3000
+    val: 1000
+    test: 1000
+  seed: 42
+  positive_ratio: .05
+
+preprocessing:
+  image_size: [128, 128,]
+  normalize: true
