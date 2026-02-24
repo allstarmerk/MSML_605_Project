@@ -39,7 +39,7 @@ def load_lfw(config):
       labels.append(int(ex["labels"].numpy()))
 
   images = np.array(images, dtype=np.uint8)  
-  images = mp.array(labels, dtype=np.int32) # _
+  images = np.array(labels, dtype=np.int32) 
   total = len(labels)
 
   rng = np.random.default_rng(seed)
@@ -54,7 +54,7 @@ def load_lfw(config):
 
   splits = {
       "train": (images[train_idx], labels[train_idx]),
-      "val": (images[train_idx, labels[val_idx]]),  #._
+      "val": (images[train_idx, labels[val_idx]]),  #._ val split 
       "test": (images[test_idx], labels[test_idx]),
   }
   manifest = {
@@ -72,4 +72,8 @@ def load_lfw(config):
   }
   return splits,  manifest
 
-
+def save_mainifest(manifest, path):
+  Path(path).parent.mkdir(parents=True, exist_ok=True)
+  with open(path, "w") as f:
+      json.dump(manifest, f, indent=2)
+  print(f"Manifest saved to : {path}")
