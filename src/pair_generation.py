@@ -83,5 +83,7 @@ def generate_all_splits(config, splits_labels):
     #save manifest for the pairs
     manifest_path = Path(pairs_dir) / "pairs_manifest.json"
     with open(manifest_path, "w") as f:
-        json.dump(all_meta, f, indent=2)
-        return all
+        json.dump(all_meta, f, indent=2) 
+    print(f"Pairs manifest saved to {manifest_path}")
+        
+    return all_meta
