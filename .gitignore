@@ -4,12 +4,15 @@ models/
 
 __pycache__/
 *.py[cod]
+.Python
+eggs/
 .eggs/
 *.egg-info/
 
 .venv/
 venv/
 env/
+ENV/
 
 .ipynb_chechpoints/
 
