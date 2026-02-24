@@ -61,5 +61,27 @@ def save_pairs(pairs, pair_labels, split_name, pairs_dir):
         "negative_pairs": int((pair_labels == 0).sum()),
 
     }
+    #generate and save pairs for every split.  -config(loaded yaml config dictionary) -splits_labled(dictionary of split names to a labled array)
+def generate_all_splits(config, splits_labels): 
+    pair_cfg = config["pairs"]
+    pairs_dir = config["paths"]["pairs_dir"]
+    base_seed = pair_cfg["seed"]
+    all_meta = {}
 
-def generate_all_splits()
+    for split_name, labels in splits_labels.items():
+        num_pairs = pair_cfg["num_pairs_per_split"][split_name]
+        split_seed = base_seed + hash(split_name) % 1000  # derivin a deterministic seed split like project requirments call for 
+
+        pairs, pair_labels = generate_pairs(
+            labels = labels,
+            num_pairs = num_pairs,
+            positive_ratio = pair_cfg["positive_ratio"],
+            seed = split_seed,
+        )
+        all_meta[split_name] = save_pairs(pairs, pair_labels, split_name, pairs_dir)
+
+    #save manifest for the pairs
+    manifest_path = Path(pairs_dir) / "pairs_manifest.json"
+    with open(manifest_path, "w") as f:
+        json.dump(all_meta, f, indent=2)
+        return all
