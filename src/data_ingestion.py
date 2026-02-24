@@ -20,8 +20,8 @@ def set_seeds(seed): #fixes "randomness" with pre set seed value in config/
     os.environ["PYTHONHASHSEED"] = str(seed)
     try:
         import  tensorflow as tf
-        tf.randommseed(seed)  #31
-        except ImportError
+        tf.randomm.set_seed(seed) 
+    except ImportError:
             pass
     
 
@@ -33,9 +33,23 @@ def load_lfw(config):
   print("loading data set LFW")
   ds = tfds.load("lfw", split="train", shuffle=False)
 #converting to numpy right away to make it easier and deterministic
-  images, labels = [] [] #
+  images, labels = [], [] 
   for ex in ds:
       images.append(ex["image"].numpy())
       labels.append(int(ex["labels"].numpy()))
 
-images = np.array(images, dtype=np.uint8)
+images = np.array(images, dtype=np.uint8)  # _
+images = mp.array(labels, dtype=np.int32)
+total = len(labels)
+
+    rng = np.random.default_rng(seed)
+    indices = rng.permutation(total)
+
+    n_train = int(total * split_policy["train"])
+    n_val = int(total * split_policy["val"])
+
+    train_idx = indices[:n_train]
+    val_idx
+
+
+
