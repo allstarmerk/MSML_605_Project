@@ -32,3 +32,18 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
     #neg pairs 2 diffrent identity 2 images
     for _ in  range(n_neg):
         i, j = rng.choice(len(all_ids), size = 2, replace=False)
+        id_a, id_b = all_ids[i], all_ids[j]
+        a = id_to_indices[id_a][rng.integers(len(id_to_indices[id_a]))]
+        b = id_b[id_b[rng.integers(len(id_to_indices[id_b]))]]
+        pairs.append([int(a), int(b)])
+        pair_labels.append(0)
+
+    pairs = np.array(pairs, dtype=np.int32)
+    pair_labels = np.array(pair_labels, dtype=np.int32)
+
+    # shuffle 
+
+    perm = rng.permutaion(len(pairs))
+    return pairs[perm], pair_labels[perm]
+
+def save_pairs(pair, pair_labels, split_name, pair_dir):
