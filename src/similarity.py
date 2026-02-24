@@ -19,3 +19,23 @@ def cosine_similarity(a, b):
     return np.einsum("nd , nd to N", a_unit, b_unit) #(N,)
 
 
+def euclidean_distance(a, b):
+    diff = a - b #(N,D)
+    return np.sqrt(np.einsum("nd, nd to N", diff, diff)) #(N,)
+
+
+
+#doing slow version using loop cosine
+def cosine_similarity_loop(a, b):
+    n = a.shape[0]
+    out = np.empty(n, dtype=np.float32)
+    for i in range(n):
+        dot = float(np.dot(a[i], b[i]))
+        norm = float(np.linalg.norm(a[i])) * float(np.linalg.norm(b[i]))
+        out[i] = dot / (norm + 1e-10)
+    return out
+
+#slow loop for euuclindean
+
+def euclidean_distance_loop(a, b):
+
