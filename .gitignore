@@ -205,3 +205,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# All the above is the basic recomended git.ignore for githubs python recomendation. Below are the additions we have added for this project
