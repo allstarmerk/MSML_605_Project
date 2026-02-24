@@ -31,7 +31,7 @@ def load_lfw(config):
 
   set_seeds(seed)
   print("loading data set LFW")
-  ds = tfds.load("lfw", split="train", shuffle=False)
+  ds, info = tfds.load("lfw", split="train", shuffle=False, with_info=True)
 #converting to numpy right away to make it easier and deterministic
   images, labels = [], [] 
   for ex in ds:
@@ -58,16 +58,21 @@ def load_lfw(config):
       "test": (images[test_idx], labels[test_idx]),
   }
   manifest = {
-      "dataset": "lfw",
       "seed": seed,
       "total_examples": total,
       "num_identites": int(np.unique(labels).size),
       "split policy": split_policy,
+      "data_source": {
+          "name": "lfw",
+          "tfds_version": str(info.version),
+          "cache_dir": str(Path.home() / "tensorflow_datasets")
+      },
       "split_counts": {
           "train": len(train_idx),
           "val": len(val_idx),
           "test": len(test_idx),
       },
+    
 
   }
   return splits,  manifest

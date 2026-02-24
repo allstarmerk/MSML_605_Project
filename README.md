@@ -7,4 +7,17 @@ MSML/MSAi project. ITs a facial recognition system similar to faceId
 
 -After you have work completed on the working branch you create a pull request. If u wanna use the UI of github you go to pull request. Click on create new pull request. Then you select the working branch and the main branch. Then you click on create pull request. Then you can add a description of the changes you made. Then you can click on create pull request again. Then the pull request will be created and you can see it in the pull request tab. Then you can merge the pull request if there are no conflicts. If there are conflicts then you have to resolve them before merging.
 
-1. Seting up
+How to run: 
+
+1. Set up the env
+    -git clone repo url
+    -cd MSML_605_Project
+
+    python -m venv .venv
+    source .venv/bin/activate    #for windows .ven\Scripts\Activate??
+
+    pip install -r requirements.txt
+
+
+    2.
+
