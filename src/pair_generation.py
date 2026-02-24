@@ -2,7 +2,16 @@ import json
 from pathlib import Path
 import numpy as np
 
+# src/pair_gen generates Deterministic pos/neg  pairs and saved as .npy 
+# pos pair is two images and labe =1 becasue they are within similarity score and are "Same"
+#neg pai is 2 images and label =0 because two images are diffrent bellow similarity score threshold
 
+
+
+#builds verification pairs from a label array "labels" are a (N,) int array of identity labels
+# "num pairs" are the total pairs we are generating
+# "seed" the random seed defined in config file /config/dataset.yaml
+#We return the "pairs" indices into the iamge array and "pair labels" labels defined above line 7
 def generate_pairs(labels, num_pairs, positive_ratio, seed):
     rng = np.random.default_rng(seed)
 
@@ -61,7 +70,7 @@ def save_pairs(pairs, pair_labels, split_name, pairs_dir):
         "negative_pairs": int((pair_labels == 0).sum()),
 
     }
-    #generate and save pairs for every split.  -config(loaded yaml config dictionary) -splits_labled(dictionary of split names to a labled array)
+    #generate and save pairs for every split. Takes in -config(loaded yaml config dictionary) -splits_labled(dictionary of split names to a labled array) 
 def generate_all_splits(config, splits_labels): 
     pair_cfg = config["pairs"]
     pairs_dir = config["paths"]["pairs_dir"]
