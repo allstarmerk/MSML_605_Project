@@ -19,5 +19,26 @@ How to run:
     pip install -r requirements.txt
 
 
-    2.
+    2. Ingest LFW dataset and generate pairs:
+      run:   python scripts/lfw_ingestion_script.py
+      -this should download lfw data set(170MG) and saves/creates data/manifest.json & data/pairs/
+    
+    3. Run similarity python script
+        python scripts/benchmark_similarity.py 
+        # name may change still have to create and code
+    
+    4. run tests
+        pytest tests/ -v  
+        # directory or name may change tests not finished yet
+
+        
+
+        Design Choices:
+    - We use a hard coded seed in config/ to meet the determinisc requirment. Seed is fixed numpy, tensorflow, and python random.
+
+    - saved pair indices saved as a .npy so evaluation is always accurate and reproducable
+
+    - Most of the settings needed are hard coded in /configs/dataset.yaml
+
+
 
