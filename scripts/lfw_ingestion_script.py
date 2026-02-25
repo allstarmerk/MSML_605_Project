@@ -18,13 +18,15 @@ ds = tfds.load('lfw', split='train')
 assert isinstance(ds, tf.data.Dataset)
 print(ds)
 """
-# load config
+# 1.load config
 data_config = load_config()
-#load LFW and split
+#2. load LFW and split
 
 data_splits, data_manifest = load_lfw(data_config)
-#save manifest
+#3.save manifest
 
-#generate pairs
+# 4. generate pairs
 
-#then summary to printout what was produced
+#5. then summary to printout what was produced  
+
+#need to finish and test
