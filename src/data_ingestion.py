@@ -4,7 +4,6 @@ import random
 from pathlib import Path
 import numpy as np
 import yaml
-import tensorflow_datasets as tfds
 
 def load_config(config_path=None):
     if config_path is None:  
@@ -18,11 +17,7 @@ def set_seeds(seed): #fixes "randomness" with pre set seed value in config/
     random.seed(seed)
     np.random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
-    try:
-        import  tensorflow as tf
-        tf.random.set_seed(seed) 
-    except ImportError:
-            pass
+    
     
 
 def load_lfw(config):
@@ -30,23 +25,12 @@ def load_lfw(config):
   split_policy = config["dataset"]["split_policy"]
 
   set_seeds(seed)
-  print("loading data set LFW")
-  ds, info = tfds.load("lfw", split="train", shuffle_files=False, with_info=True)
+  from sklearn.datasets import fetch_lfw_people
+  print("loading dataset LFW via sklearn...")
+  lfw = fetch_lfw_people(min_faces_per_person=1, color=True, resize=0.5)
 
-#converting to numpy right away to make it easier and deterministic
-# lfw labels are strings we map them to ints. 
-# we dont use the labels(names) for anything besides generating pair for evaluation pairs. After pair gen they are not used to calculate similarity score
-  images, label_strings = [], [] 
-  for ex in ds:
-      # ex = a dictionary with an image (3-dim int tensor) and label (string)
-      images.append(ex["image"].numpy())
-      label_strings.append(ex["label"].numpy().decode("utf-8"))
-
-  unique_names = sorted(set(label_strings))
-  name_to_int = {name: i for i, name in enumerate(unique_names)}
-
-  images = np.array(images, dtype=np.uint8)  
-  labels = np.array([name_to_int[n] for n in label_strings], dtype=np.int32) 
+  images = (lfw.images * 255).astype(np.uint8)
+  labels = lfw.target.astype(np.int32)
   total = len(labels)
 
   rng = np.random.default_rng(seed)
@@ -71,8 +55,8 @@ def load_lfw(config):
       "split policy": split_policy,
       "data_source": {
           "name": "lfw",
-          "tfds_version": str(info.version),
-          "cache_dir": str(Path.home() / "tensorflow_datasets")
+          "loader": "sklearn.datasets.fetch_lfw_people",
+          "cache_dir": str(Path.home() / "scikit_learn_data"),
       },
       "split_counts": {
           "train": len(train_idx),
