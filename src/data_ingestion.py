@@ -31,7 +31,7 @@ def load_lfw(config):
 
   set_seeds(seed)
   print("loading data set LFW")
-  ds, info = tfds.load("lfw", split="train", shuffle=False, with_info=True)
+  ds, info = tfds.load("lfw", split="train", shuffle_files=False, with_info=True)
 #converting to numpy right away to make it easier and deterministic
   images, labels = [], [] 
   for ex in ds:
