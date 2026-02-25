@@ -33,6 +33,7 @@ def load_lfw(config):
   print("loading data set LFW")
   ds, info = tfds.load("lfw", split="train", shuffle_files=False, with_info=True)
 
+  print(f"DS ELEMENT SPEC: {ds.element_spec}")
 #converting to numpy right away to make it easier and deterministic
   images, labels = [], [] 
   for ex in ds:
