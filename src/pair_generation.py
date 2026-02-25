@@ -60,7 +60,7 @@ def save_pairs(pairs, pair_labels, split_name, pairs_dir):
     out.mkdir(parents=True, exist_ok=True)
 
     np.save(out / f"{split_name}_pairs.npy", pairs)
-    np.save(out / f"{split_name}_labels.npy", pairs)
+    np.save(out / f"{split_name}_labels.npy", pair_labels) 
 
     print(f"[{split_name}] {len(pairs)} pairs saved to {out}")
     return {
