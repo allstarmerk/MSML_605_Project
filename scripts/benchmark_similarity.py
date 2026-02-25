@@ -19,10 +19,10 @@ from src.similarity import (
 def timeit(fn, *args, reps=5):
     times = []
     for _ in range(reps): #using _ to show we not using index 
-        t0 = time.perf_counter
+        t0 = time.perf_counter()
         fn(*args)
         times.append(time.perf_counter() - t0)
-    return np.mean(times) * 100 # in milisec
+    return np.mean(times) * 1000 # in milisec
 
 
 def check(a, b, label):
@@ -64,7 +64,7 @@ def main():
     print(f"{'Pass' if  np.allclose(dist, 0.0, atol=1e-5) else 'Fail' } identical vectors, euclidean =0"  ) 
 
     e1 = np.array([[1., 0., 0.]], dtype=np.float32)
-    e2 = np.aray([[0., 1., 0.]], dtype=np.float32)
+    e2 = np.array([[0., 1., 0.]], dtype=np.float32)
     print(f"  {'PASS' if np.allclose(cosine_similarity(e1, e2), 0., atol=1e-5) else 'Fail'} orthogonal vectors, cosine = 0")
 
 
