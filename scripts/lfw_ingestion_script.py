@@ -10,7 +10,9 @@ from src.data_ingestion import (
     load_lfw,
     save_mainifest
 )
-from src.pair_generation import ( generate_all_splits)
+from src.pair_generation import ( 
+    generate_all_splits
+)
 
 
 """"
