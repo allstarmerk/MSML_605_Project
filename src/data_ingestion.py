@@ -36,7 +36,7 @@ def load_lfw(config):
   images, labels = [], [] 
   for ex in ds:
       images.append(ex["image"].numpy())
-      labels.append(int(ex["labels"].numpy()))
+      labels.append(ex["label"].numpy())
 
   images = np.array(images, dtype=np.uint8)  
   images = np.array(labels, dtype=np.int32) 
