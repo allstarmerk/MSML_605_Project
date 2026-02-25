@@ -55,7 +55,7 @@ def main():
         print(f" Euclid Numpy: {t_euc_vec:7.2f} MS  to {t_euc_loop / t_euc_vec:.1f} speedup")
         check(euclidean_distance_loop(a, b), euclidean_distance(a, b), "Euclidean")
 
-    print("\n additional checks")
+    print("\n additional checks: unit tests for the math for each")
     x =  rng.random((10, 64)).astype(np.float32)
     sim = cosine_similarity(x, x)
     print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors, cosine = 1")
