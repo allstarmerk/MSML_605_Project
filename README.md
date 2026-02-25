@@ -31,7 +31,7 @@ How to run:
         pytest tests/ -v  
         # directory or name may change tests not finished yet
 
-        
+
 
         Design Choices:
     - We use a hard coded seed in config/ to meet the determinisc requirment. Seed is fixed numpy, tensorflow, and python random.
@@ -39,6 +39,15 @@ How to run:
     - saved pair indices saved as a .npy so evaluation is always accurate and reproducable
 
     - Most of the settings needed are hard coded in /configs/dataset.yaml
+
+
+
+    - To test the logic and math for Similarity.py you can run benchmark_similarity.py
+    
+              run-->     - python scripts/benchmark_similarity.py
+
+        - This will provide a output showing the comparision of using the loop vs Numpy for both cosine and euclidean calculations. As well as having a unit test at the end checking the math of the math functions.
+
 
 
 

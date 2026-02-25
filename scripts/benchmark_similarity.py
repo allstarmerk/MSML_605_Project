@@ -19,10 +19,10 @@ from src.similarity import (
 def timeit(fn, *args, reps=5):
     times = []
     for _ in range(reps): #using _ to show we not using index 
-        t0 = time.perf_counter
+        t0 = time.perf_counter()
         fn(*args)
         times.append(time.perf_counter() - t0)
-    return np.mean(times) * 100 # in milisec
+    return np.mean(times) * 1000 # in milisec
 
 
 def check(a, b, label):
@@ -55,13 +55,25 @@ def main():
         print(f" Euclid Numpy: {t_euc_vec:7.2f} MS  to {t_euc_loop / t_euc_vec:.1f} speedup")
         check(euclidean_distance_loop(a, b), euclidean_distance(a, b), "Euclidean")
 
-    print("\n additional checks")
+    print("\n additional checks: unit tests for the math for each")
     x =  rng.random((10, 64)).astype(np.float32)
     sim = cosine_similarity(x, x)
-    print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors to cosine = 1")
+    print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors, cosine = 1")
 
     dist = euclidean_distance(x, x)
-    print(f"") 
+    print(f"{'Pass' if  np.allclose(dist, 0.0, atol=1e-5) else 'Fail' } identical vectors, euclidean =0"  ) 
+
+    e1 = np.array([[1., 0., 0.]], dtype=np.float32)
+    e2 = np.array([[0., 1., 0.]], dtype=np.float32)
+    print(f"  {'PASS' if np.allclose(cosine_similarity(e1, e2), 0., atol=1e-5) else 'Fail'} orthogonal vectors, cosine = 0")
 
 
+    big_a = rng.standard_normal((500, 256)).astype(np.float32)
+    big_b = rng.standard_normal((500, 256)).astype(np.float32)
+    sims = cosine_similarity(big_a, big_b)
+    print(f" {'Pass' if np.all(sims >= -1-1e-5) and np.all(sims <= 1+1e-5) else 'Fail'} cosine range in -1, 1")
 
+    print("Similarity Benchmark Complete:")
+
+if __name__ == "__main__":
+    main()

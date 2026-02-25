@@ -43,7 +43,7 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
         i, j = rng.choice(len(all_ids), size = 2, replace=False)
         id_a, id_b = all_ids[i], all_ids[j]
         a = id_to_indices[id_a][rng.integers(len(id_to_indices[id_a]))]
-        b = id_b[id_b[rng.integers(len(id_to_indices[id_b]))]]
+        b = id_to_indices[id_b][rng.integers(len(id_to_indices[id_b]))]
         pairs.append([int(a), int(b)])
         pair_labels.append(0)
 
@@ -52,7 +52,7 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
 
     # shuffle 
 
-    perm = rng.permutaion(len(pairs))
+    perm = rng.permutation(len(pairs))
     return pairs[perm], pair_labels[perm]
 
 def save_pairs(pairs, pair_labels, split_name, pairs_dir):
@@ -60,7 +60,7 @@ def save_pairs(pairs, pair_labels, split_name, pairs_dir):
     out.mkdir(parents=True, exist_ok=True)
 
     np.save(out / f"{split_name}_pairs.npy", pairs)
-    np.save(out / f"{split_name}_labels.npy", pairs)
+    np.save(out / f"{split_name}_labels.npy", pair_labels) 
 
     print(f"[{split_name}] {len(pairs)} pairs saved to {out}")
     return {

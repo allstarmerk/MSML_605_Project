@@ -4,7 +4,6 @@ import random
 from pathlib import Path
 import numpy as np
 import yaml
-import tensorflow_datasets as tfds
 
 def load_config(config_path=None):
     if config_path is None:  
@@ -18,11 +17,7 @@ def set_seeds(seed): #fixes "randomness" with pre set seed value in config/
     random.seed(seed)
     np.random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
-    try:
-        import  tensorflow as tf
-        tf.random.set_seed(seed) 
-    except ImportError:
-            pass
+    
     
 
 def load_lfw(config):
@@ -30,19 +25,12 @@ def load_lfw(config):
   split_policy = config["dataset"]["split_policy"]
 
   set_seeds(seed)
-  print("loading data set LFW")
-  ds, info = tfds.load("lfw", split="train", shuffle_files=False, with_info=True)
+  from sklearn.datasets import fetch_lfw_people
+  print("loading dataset LFW via sklearn...")
+  lfw = fetch_lfw_people(min_faces_per_person=1, color=True, resize=0.5)
 
-  print(f"DS ELEMENT SPEC: {ds.element_spec}")
-#converting to numpy right away to make it easier and deterministic
-  images, labels = [], [] 
-  for ex in ds:
-      # ex = a dictionary with an image (3-dim int tensor) and label (string)
-      images.append(ex["image"].numpy())
-      labels.append(int(ex["label"].numpy()))  # Question: why do we need to convert labels to ints? assigning image labels to an index? This form of conversion produces ValueError
-
-  images = np.array(images, dtype=np.uint8)  
-  images = np.array(labels, dtype=np.int32) 
+  images = (lfw.images * 255).astype(np.uint8)
+  labels = lfw.target.astype(np.int32)
   total = len(labels)
 
   rng = np.random.default_rng(seed)
@@ -57,7 +45,7 @@ def load_lfw(config):
 
   splits = {
       "train": (images[train_idx], labels[train_idx]),
-      "val": (images[train_idx, labels[val_idx]]),  #._ val split 
+      "val": (images[val_idx], labels[val_idx]),  
       "test": (images[test_idx], labels[test_idx]),
   }
   manifest = {
@@ -67,8 +55,8 @@ def load_lfw(config):
       "split policy": split_policy,
       "data_source": {
           "name": "lfw",
-          "tfds_version": str(info.version),
-          "cache_dir": str(Path.home() / "tensorflow_datasets")
+          "loader": "sklearn.datasets.fetch_lfw_people",
+          "cache_dir": str(Path.home() / "scikit_learn_data"),
       },
       "split_counts": {
           "train": len(train_idx),
@@ -85,3 +73,4 @@ def save_mainifest(manifest, path):
   with open(path, "w") as f:
       json.dump(manifest, f, indent=2)
   print(f"Manifest saved to : {path}")
+

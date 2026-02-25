@@ -16,12 +16,12 @@ def cosine_similarity(a, b):
     a_unit = a / norm_a #(N, D)
     b_unit = b / norm_b # same as above N,D
 
-    return np.einsum("nd , nd to N", a_unit, b_unit) #(N,)
+    return np.einsum("nd,nd->n", a_unit, b_unit)  #multiply element-wise across the d dimension and sum it up, giving back one number per row.
 
 
 def euclidean_distance(a, b):
     diff = a - b #(N,D)
-    return np.sqrt(np.einsum("nd, nd to N", diff, diff)) #(N,)
+    return np.sqrt(np.einsum("nd,nd->n", diff, diff)) #(N,)
 
 
 
@@ -41,7 +41,7 @@ def euclidean_distance_loop(a, b):
     n = a.shape[0]
     out = np.empty(n, dtype=np.float32)
     for i in range(n):
-        out[i] = float(np.sqrt(np.sum(a[i] - b[i] ** 2)))
+        out[i] = float(np.sqrt(np.sum((a[i] - b[i]) ** 2)))
     return out
 
 
