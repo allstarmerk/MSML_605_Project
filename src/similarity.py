@@ -21,7 +21,7 @@ def cosine_similarity(a, b):
 
 def euclidean_distance(a, b):
     diff = a - b #(N,D)
-    return np.sqrt(np.einsum("nd, nd to N", diff, diff)) #(N,)
+    return np.sqrt(np.einsum("nd,nd->n", diff, diff)) #(N,)
 
 
 
