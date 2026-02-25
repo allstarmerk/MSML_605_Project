@@ -59,7 +59,7 @@ def main():
     print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors to cosine = 1")
 
     dist = euclidean_distance(x, x)
-    print(f"") 
+    print(f"") #line 71
 
 
 

@@ -33,13 +33,18 @@ def load_lfw(config):
   print("loading data set LFW")
   ds, info = tfds.load("lfw", split="train", shuffle=False, with_info=True)
 #converting to numpy right away to make it easier and deterministic
-  images, labels = [], [] 
+# lfw labels are strings we map them to ints. 
+# we dont use the labels(names) for anything besides generating pair for evaluation pairs. After pair gen they are not used to calculate similarity score
+  images, label_strings = [], [] 
   for ex in ds:
       images.append(ex["image"].numpy())
-      labels.append(int(ex["labels"].numpy()))
+      label_strings.append(ex["label"]).numpy().decode("utf-8")
+
+  unique_names = sorted(set(label_strings))
+  name_to_int = {name: i for i, name in enumerate(unique_names)}
 
   images = np.array(images, dtype=np.uint8)  
-  images = np.array(labels, dtype=np.int32) 
+  labels = np.array([name_to_int[n] for n in label_strings], dtype=np.int32) 
   total = len(labels)
 
   rng = np.random.default_rng(seed)
@@ -54,7 +59,7 @@ def load_lfw(config):
 
   splits = {
       "train": (images[train_idx], labels[train_idx]),
-      "val": (images[train_idx, labels[val_idx]]),  #._ val split 
+      "val": (images[val_idx], labels[val_idx]),  
       "test": (images[test_idx], labels[test_idx]),
   }
   manifest = {
