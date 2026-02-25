@@ -32,11 +32,12 @@ def load_lfw(config):
   set_seeds(seed)
   print("loading data set LFW")
   ds, info = tfds.load("lfw", split="train", shuffle_files=False, with_info=True)
+
 #converting to numpy right away to make it easier and deterministic
   images, labels = [], [] 
   for ex in ds:
       images.append(ex["image"].numpy())
-      labels.append(ex["label"].numpy())
+      labels.append(int(ex["label"].numpy()))
 
   images = np.array(images, dtype=np.uint8)  
   images = np.array(labels, dtype=np.int32) 
