@@ -36,8 +36,9 @@ def load_lfw(config):
 #converting to numpy right away to make it easier and deterministic
   images, labels = [], [] 
   for ex in ds:
+      # ex = a dictionary with an image (3-dim int tensor) and label (string)
       images.append(ex["image"].numpy())
-      labels.append(int(ex["label"].numpy()))
+      labels.append(int(ex["label"].numpy()))  # Question: why do we need to convert labels to ints? assigning image labels to an index? This form of conversion produces ValueError
 
   images = np.array(images, dtype=np.uint8)  
   images = np.array(labels, dtype=np.int32) 
