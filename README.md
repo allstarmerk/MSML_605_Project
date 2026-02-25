@@ -25,14 +25,8 @@ How to run:
     
     3. Run similarity python script
         python scripts/benchmark_similarity.py 
-        # name may change still have to create and code
-    
-    4. run tests
-        pytest tests/ -v  
-        # directory or name may change tests not finished yet
-
-
-
+          
+       
         Design Choices:
     - We use a hard coded seed in config/ to meet the determinisc requirment. Seed is fixed numpy, tensorflow, and python random.
 
