@@ -16,7 +16,7 @@ def cosine_similarity(a, b):
     a_unit = a / norm_a #(N, D)
     b_unit = b / norm_b # same as above N,D
 
-    return np.einsum("nd , nd to N", a_unit, b_unit) #(N,)
+    return np.einsum("nd,nd->n", a_unit, b_unit)  #multiply element-wise across the d dimension and sum it up, giving back one number per row.
 
 
 def euclidean_distance(a, b):
