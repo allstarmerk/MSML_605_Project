@@ -65,5 +65,15 @@ def main():
 
     e1 = np.array([[1., 0., 0.]], dtype=np.float32)
     e2 = np.aray([[0., 1., 0.]], dtype=np.float32)
+    print(f"  {'PASS' if np.allclose(cosine_similarity(e1, e2), 0., atol=1e-5) else 'Fail'} orthogonal vectors, cosine = 0")
 
-main()
+
+    big_a = rng.standard_normal((500, 256)).astype(np.float32)
+    big_b = rng.standard_normal((500, 256)).astype(np.float32)
+    sims = cosine_similarity(big_a, big_b)
+    print(f" {'Pass' if np.all(sims >= -1-1e-5) and np.all(sims <= 1+1e-5) else 'Fail'} cosine range in -1, 1")
+
+    print("Similarity Benchmark Complete:")
+
+if __name__ == "__main__":
+    main()
