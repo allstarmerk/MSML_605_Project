@@ -58,10 +58,12 @@ def main():
     print("\n additional checks")
     x =  rng.random((10, 64)).astype(np.float32)
     sim = cosine_similarity(x, x)
-    print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors to cosine = 1")
+    print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors, cosine = 1")
 
     dist = euclidean_distance(x, x)
-    print(f"") #line 71
+    print(f"{'Pass' if  np.allclose(dist, 0.0, atol=1e-5) else 'Fail' } identical vectors, euclidean =0"  ) 
 
+    e1 = np.array([[1., 0., 0.]], dtype=np.float32)
+    e2 = np.aray([[0., 1., 0.]], dtype=np.float32)
 
 main()
