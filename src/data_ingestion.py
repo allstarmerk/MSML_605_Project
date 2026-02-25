@@ -40,7 +40,7 @@ def load_lfw(config):
   for ex in ds:
       # ex = a dictionary with an image (3-dim int tensor) and label (string)
       images.append(ex["image"].numpy())
-      label_strings.append(ex["label"]).numpy().decode("utf-8")
+      label_strings.append(ex["label"].numpy().decode("utf-8"))
 
   unique_names = sorted(set(label_strings))
   name_to_int = {name: i for i, name in enumerate(unique_names)}
