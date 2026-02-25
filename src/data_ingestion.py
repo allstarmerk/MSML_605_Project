@@ -20,7 +20,7 @@ def set_seeds(seed): #fixes "randomness" with pre set seed value in config/
     os.environ["PYTHONHASHSEED"] = str(seed)
     try:
         import  tensorflow as tf
-        tf.randomm.set_seed(seed) 
+        tf.random.set_seed(seed) 
     except ImportError:
             pass
     
