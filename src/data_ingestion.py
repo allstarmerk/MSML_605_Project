@@ -40,14 +40,10 @@ def load_lfw(config):
   for ex in ds:
       # ex = a dictionary with an image (3-dim int tensor) and label (string)
       images.append(ex["image"].numpy())
-<<<<<<< HEAD
       label_strings.append(ex["label"]).numpy().decode("utf-8")
 
   unique_names = sorted(set(label_strings))
   name_to_int = {name: i for i, name in enumerate(unique_names)}
-=======
-      labels.append(int(ex["label"].numpy()))  # Question: why do we need to convert labels to ints? assigning image labels to an index? This form of conversion produces ValueError
->>>>>>> 2854e6a412bea4c30b2e6ce9438b63bd918f5412
 
   images = np.array(images, dtype=np.uint8)  
   labels = np.array([name_to_int[n] for n in label_strings], dtype=np.int32) 
@@ -93,3 +89,4 @@ def save_mainifest(manifest, path):
   with open(path, "w") as f:
       json.dump(manifest, f, indent=2)
   print(f"Manifest saved to : {path}")
+
