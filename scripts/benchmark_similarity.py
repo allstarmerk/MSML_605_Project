@@ -5,7 +5,9 @@ import numpy as np
 #Going to be for comparing the python loop doing the cosin and euclidean vs vectorized way of doing it with numpy
 # compares the timing and corectness 
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+sys.path.insert(0, root_path)
 
 from src.similarity import (
     cosine_similarity,
@@ -62,5 +64,4 @@ def main():
     print(f"") 
 
 
-
-
+main()
