@@ -41,7 +41,7 @@ def euclidean_distance_loop(a, b):
     n = a.shape[0]
     out = np.empty(n, dtype=np.float32)
     for i in range(n):
-        out[i] = float(np.sqrt(np.sum(a[i] - b[i] ** 2)))
+        out[i] = float(np.sqrt(np.sum((a[i] - b[i]) ** 2)))
     return out
 
 
