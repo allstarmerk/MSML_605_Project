@@ -1,5 +1,12 @@
+import sys
+import os
+
 import tensorflow as tf
 import tensorflow_datasets as tfds
+
+root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+sys.path.insert(0, root_path)
 
 from src.data_ingestion import (
     load_config,
