@@ -1,8 +1,6 @@
 import sys
 import os
 
-import tensorflow as tf
-import tensorflow_datasets as tfds
 
 root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
