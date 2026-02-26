@@ -13,8 +13,8 @@ How to run:
     -git clone repo url
     -cd MSML_605_Project
 
-    python -m venv .venv
-    source .venv/bin/activate    #for windows .ven\Scripts\Activate??
+    --> python -m venv .venv   or   py -m venv .venv
+      -->  .ven\Scripts\Activate
 
     pip install -r requirements.txt
 
@@ -25,14 +25,8 @@ How to run:
     
     3. Run similarity python script
         python scripts/benchmark_similarity.py 
-        # name may change still have to create and code
-    
-    4. run tests
-        pytest tests/ -v  
-        # directory or name may change tests not finished yet
-
-
-
+          
+       
         Design Choices:
     - We use a hard coded seed in config/ to meet the determinisc requirment. Seed is fixed numpy, tensorflow, and python random.
 

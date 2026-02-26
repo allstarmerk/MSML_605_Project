@@ -1,7 +1,7 @@
-numpy==1.26.4
-scipy==1.13.0
-scikit-learn==1.4.2
-matplotlib==3.8.4
-PyYAML==6.0.1
-tqdm==4.66.4
-pytest==8.2.0
+numpy
+scipy
+scikit-learn
+matplotlib
+PyYAML
+tqdm
+pytest
