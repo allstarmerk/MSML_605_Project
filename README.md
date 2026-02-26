@@ -13,8 +13,8 @@ How to run:
     -git clone repo url
     -cd MSML_605_Project
 
-    python -m venv .venv
-    source .venv/bin/activate    #for windows .ven\Scripts\Activate??
+    --> python -m venv .venv   or   py -m venv .venv
+      -->  .ven\Scripts\Activate
 
     pip install -r requirements.txt
 
