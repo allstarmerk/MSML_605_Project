@@ -10,7 +10,7 @@ MSML/MSAi project. ITs a facial recognition system similar to faceId
 How to run: 
 
 1. Set up the env
-    -git clone repo url
+    -git clone <repo url>
     -cd MSML_605_Project
 
     --> python -m venv .venv   or   py -m venv .venv

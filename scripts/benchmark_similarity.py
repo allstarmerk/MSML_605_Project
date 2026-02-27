@@ -27,14 +27,14 @@ def timeit(fn, *args, reps=5):
 
 def check(a, b, label):
     ok = np.allclose(a, b, atol=1e-4)
-    sym = "Pass" if ok else "Fail"
-    print(f" {sym} correctness [{label}] max diff: {np.max(np.abs(a-b)): .2e}")
+    sym = "PASS" if ok else "FAIL"
+    print(f" Small Difference Tolerance Check [{label}]: {sym}\n Max Difference: {np.max(np.abs(a-b)): .2e}")
 
 
 def main():
     rng = np.random.default_rng(42)
 
-    print("similarity benchmark: using Loop vs Numpy")
+    print("Similarity Benchmark: using Loop vs Numpy")
     print("=" * 55)
 
     for n, d in [(100, 512), (1000, 512), (5000, 512)]:
@@ -51,29 +51,29 @@ def main():
 
         t_euc_loop = timeit(euclidean_distance_loop, a, b)
         t_euc_vec = timeit(euclidean_distance, a, b)
-        print(f" Euclid loop: {t_euc_loop:7.2f} MS")
+        print(f" \nEuclid loop: {t_euc_loop:7.2f} MS")
         print(f" Euclid Numpy: {t_euc_vec:7.2f} MS  to {t_euc_loop / t_euc_vec:.1f} speedup")
         check(euclidean_distance_loop(a, b), euclidean_distance(a, b), "Euclidean")
 
-    print("\n additional checks: unit tests for the math for each")
+    print("\nAdditional Checks: unit tests for the math for each")
     x =  rng.random((10, 64)).astype(np.float32)
     sim = cosine_similarity(x, x)
-    print(f" {'Pass' if np.allclose(sim, 1.0, atol=1e-5) else 'Fail'} identical vectors, cosine = 1")
+    print(f" Identical Vector Check (Cosine = 1): {'PASS' if np.allclose(sim, 1.0, atol=1e-5) else 'FAIL'}")
 
     dist = euclidean_distance(x, x)
-    print(f"{'Pass' if  np.allclose(dist, 0.0, atol=1e-5) else 'Fail' } identical vectors, euclidean =0"  ) 
+    print(f" Identical Vector Check (Euclidean = 0): {'PASS' if  np.allclose(dist, 0.0, atol=1e-5) else 'FAIL' }"  ) 
 
     e1 = np.array([[1., 0., 0.]], dtype=np.float32)
     e2 = np.array([[0., 1., 0.]], dtype=np.float32)
-    print(f"  {'PASS' if np.allclose(cosine_similarity(e1, e2), 0., atol=1e-5) else 'Fail'} orthogonal vectors, cosine = 0")
+    print(f" Orthogonal Vector Check (Cosine = 0): {'PASS' if np.allclose(cosine_similarity(e1, e2), 0., atol=1e-5) else 'FAIL'}")
 
 
     big_a = rng.standard_normal((500, 256)).astype(np.float32)
     big_b = rng.standard_normal((500, 256)).astype(np.float32)
     sims = cosine_similarity(big_a, big_b)
-    print(f" {'Pass' if np.all(sims >= -1-1e-5) and np.all(sims <= 1+1e-5) else 'Fail'} cosine range in -1, 1")
+    print(f" Cosine Range in [-1, 1]: {'PASS' if np.all(sims >= -1-1e-5) and np.all(sims <= 1+1e-5) else 'FAIL'}")
 
-    print("Similarity Benchmark Complete:")
+    print("\nSimilarity Benchmark Complete")
 
 if __name__ == "__main__":
     main()
