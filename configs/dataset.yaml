@@ -22,8 +22,8 @@ preprocessing:
   image_size: [128, 128,]  #resizing images to 128x128 the data set gives them as 250x250
   normalize: true           # we can change this value to change resizing. can play with this value. may need to lower to speed up process. OR try higher number
 
-  #file paths hard code
-  paths:
+  
+paths:
     data_dir: "data/"
     manifest_path: "data/manifest.json"
     pairs_dir: "data/pairs/"
