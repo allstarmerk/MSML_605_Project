@@ -15,11 +15,6 @@ from src.pair_generation import (
 )
 
 
-""""
-ds = tfds.load('lfw', split='train')
-assert isinstance(ds, tf.data.Dataset)
-print(ds)
-"""
 # 1.load config
 data_config = load_config()
 #2. load LFW and split
