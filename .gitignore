@@ -1,4 +1,4 @@
-data/
+data/  
 
 models/
 
@@ -14,7 +14,7 @@ venv/
 env/
 ENV/
 
-.ipynb_chechpoints/
+.ipynb_checkpoints/
 
 mlruns/
 logs/
