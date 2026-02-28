@@ -1,0 +1,29 @@
+#This is a config file that uses the typical 70/15/15 split 70% of training, 15% on valadation, and final 15 % on test set to report off of.
+# Data set settings instead of hard coding them. will have script call the config file for reproducability
+dataset:
+  name: lfw
+  seed: 42  #the random seed we are seting globaly for data set operations. Controls order images are shuffled before splitting
+  split_policy:  #change seed value above to get complettly diffrent train/split. need consistent seed to keep consistency. 
+    train: 0.70
+    val: 0.15   #basic train split convention. If specified later to change we can jsut change config file values here
+    test: 0.15
+
+pairs:  #This is how many pairs we will generate for each split. 
+        # A pair is 2 images pluss a label (1 = same person, 0 = diff person)
+  num_pairs_per_split:
+    train: 3000    #More pairs generaly mean more stablity and less variance
+    val: 1000      # less pairs usally mean faster to run when deploying
+    test: 1000
+  seed: 42         # sepparate seed specificaly for pair generation. Same value but diffrent metric
+                   # If we want to re create pairs with diffrent "randomness" without changeing train/spilt values we can cange this seed value.
+  positive_ratio: .5    #made 50/50 because im asuming since there are 2 images per pair. we would need be 50/50 for accuracy.
+
+preprocessing:
+  image_size: [128, 128,]  #resizing images to 128x128 the data set gives them as 250x250
+  normalize: true           # we can change this value to change resizing. can play with this value. may need to lower to speed up process. OR try higher number
+
+  
+paths:
+    data_dir: "data/"
+    manifest_path: "data/manifest.json"
+    pairs_dir: "data/pairs/"

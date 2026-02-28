@@ -1,0 +1,11 @@
+import numpy as np
+
+pairs  = np.load('data/pairs/train_pairs.npy')
+labels = np.load('data/pairs/train_labels.npy')
+
+print('pairs shape:', pairs.shape)
+print('labels shape:', labels.shape)
+print('positive pairs:', labels.sum())
+print('negative pairs:', (labels == 0).sum())
+print('first 5 pairs:', pairs[:5])
+print('first 5 labels:', labels[:5])
