@@ -13,10 +13,10 @@ How to run:
     -git clone <repo url>
     -cd MSML_605_Project
 
-    --> python -m venv .venv   or   py -m venv .venv
-      -->  .ven\Scripts\Activate
+    --> python -m venv .venv   or  for windows you may have to use -->  py -m venv .venv
+      -  .ven\Scripts\Activate
 
-    pip install -r requirements.txt
+    - pip install -r requirements.txt
 
 
     2. Ingest LFW dataset and generate pairs:
@@ -24,8 +24,26 @@ How to run:
       -this should download lfw data set(170MG) and saves/creates data/manifest.json & data/pairs/
     
     3. Run similarity python script
-        python scripts/benchmark_similarity.py 
+       - python scripts/benchmark_similarity.py 
+
+
+
+
+    4. To verify the pair splits Run
+      run ---> python -c "import numpy as np; pairs = np.load('data/pairs/train_pairs.npy'); labels = np.load('data/pairs/train_labels.npy'); print('pairs shape:', pairs.shape); print('positive pairs:', labels.sum()); print('negative pairs:', (labels==0).sum())"
+
+
+      Expected Output: Expected output:
+        pairs shape: (3000, 2)
+        positive pairs: 1500
+        negative pairs: 1500
+
+
+
+    5. To verify determinism (run ingestion script a 2nd time)
+        - python scripts/lfw_ingestion_script.py
           
+          Then Check that data/manifest.json has identical counts to the first run. to comfirm determinism
        
         Design Choices:
     - We use a hard coded seed in config/ to meet the determinisc requirment. Seed is fixed numpy, tensorflow, and python random.
