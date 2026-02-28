@@ -21,7 +21,7 @@ def set_seeds(seed): #fixes "randomness" with pre set seed value in config/
     
 
 def load_lfw(config):
-  seed =  config["dataset"]["seed"]  #seting from config/
+  seed =  config["dataset"]["seed"]  
   split_policy = config["dataset"]["split_policy"]
 
   set_seeds(seed)
@@ -31,6 +31,9 @@ def load_lfw(config):
 
   images = (lfw.images * 255).astype(np.uint8)
   labels = lfw.target.astype(np.int32)
+  order = np.argsort(labels, kind="stable") # sort by label for deterministic ordering before spliting
+  images = images[order]       # kind="stable" keeps relative order of images within same identity
+  labels = labels[order]
   total = len(labels)
 
   rng = np.random.default_rng(seed)
