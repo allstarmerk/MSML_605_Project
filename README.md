@@ -17,6 +17,7 @@ python -m venv .venv   (or for Windows you may have to use -->  py -m venv .venv
 .venv\Scripts\Activate
 pip install -r requirements.txt
 ```
+<br/>
 
 2. Ingest LFW dataset and generate pairs, run the following:
 ```
@@ -44,7 +45,7 @@ python scripts/lfw_ingestion_script.py
 ```    
   
 - Then compare new data/manifest.json with the 1st run's manifest summary printed on the command terminal and check if they have identical counts. to comfirm determinism
- 
+<br/> 
 
 
 5. To run the Similarity Benchmark test, run the following:
@@ -53,7 +54,7 @@ python scripts/benchmark_similarity.py
 ```
   
 - This will provide a output showing the comparision of using the loop vs Numpy for both cosine and euclidean calculations. It also has a unit test at the end checking the math of the math functions.
-
+<br/>
 
 Design Choices:
   - We use a hard coded seed in config/ to meet the determinisc requirment. Seed is fixed numpy, tensorflow, and python random.
