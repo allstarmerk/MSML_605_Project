@@ -10,49 +10,49 @@ MSML/MSAI project. It's a facial recognition system similar to faceId
 How to run: 
 
 1. To set up the environment, run the following commands:
-        ```
-        git clone <repo url>
-        cd MSML_605_Project
-        python -m venv .venv   (or for Windows you may have to use -->  py -m venv .venv)
-        .venv\Scripts\Activate
-        pip install -r requirements.txt
-        ```
+```
+git clone <repo url>
+cd MSML_605_Project
+python -m venv .venv   (or for Windows you may have to use -->  py -m venv .venv)
+.venv\Scripts\Activate
+pip install -r requirements.txt
+```
 
 
 
 2. Ingest LFW dataset and generate pairs, run the following:
-        ```
-        python scripts/lfw_ingestion_script.py
-        ```
+```
+python scripts/lfw_ingestion_script.py
+```
       
-    This should download lfw data set(170MG) and saves/creates data/manifest.json & data/pairs/
+  This should download lfw data set(170MG) and saves/creates data/manifest.json & data/pairs/
     
 
 
 3. To verify the pair splits, run the following:
-        ```
-        python -c "import numpy as np; pairs = np.load('data/pairs/train_pairs.npy'); labels = np.load('data/pairs/train_labels.npy'); print('pairs shape:', pairs.shape); print('positive pairs:', labels.sum()); print('negative pairs:', (labels==0).sum())"
-        ```
-    Expected Output:
-      - pairs shape: (3000, 2)
-      - positive pairs: 1500
-      - negative pairs: 1500
+```
+python -c "import numpy as np; pairs = np.load('data/pairs/train_pairs.npy'); labels = np.load('data/pairs/train_labels.npy'); print('pairs shape:', pairs.shape); print('positive pairs:', labels.sum()); print('negative pairs:', (labels==0).sum())"
+```
+  Expected Output:
+  - pairs shape: (3000, 2)
+  - positive pairs: 1500
+  - negative pairs: 1500
 
 
 
 4. To verify determinism, run ingestion script a 2nd time:
-        ```
-        python scripts/lfw_ingestion_script.py
-        ```    
-    Then compare new data/manifest.json with the 1st run's manifest summary printed on the command terminal and check if they have identical counts. to comfirm determinism
+```
+python scripts/lfw_ingestion_script.py
+```    
+  Then compare new data/manifest.json with the 1st run's manifest summary printed on the command terminal and check if they have identical counts. to comfirm determinism
        
 
 
 5. To run the Similarity Benchmark test, run the following:
-        ```
-        python scripts/benchmark_similarity.py
-        ```
-    This will provide a output showing the comparision of using the loop vs Numpy for both cosine and euclidean calculations. It also has a unit test at the end checking the math of the math functions.
+```
+python scripts/benchmark_similarity.py
+```
+  This will provide a output showing the comparision of using the loop vs Numpy for both cosine and euclidean calculations. It also has a unit test at the end checking the math of the math functions.
 
 
 
