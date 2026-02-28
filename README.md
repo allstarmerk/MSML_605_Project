@@ -14,7 +14,7 @@ How to run:
     -cd MSML_605_Project
 
     --> python -m venv .venv   or  for windows you may have to use -->  py -m venv .venv
-      -  .ven\Scripts\Activate
+      -  .venv\Scripts\Activate
 
     - pip install -r requirements.txt
 
