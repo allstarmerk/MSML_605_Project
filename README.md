@@ -18,42 +18,40 @@ python -m venv .venv   (or for Windows you may have to use -->  py -m venv .venv
 pip install -r requirements.txt
 ```
 
-
-
 2. Ingest LFW dataset and generate pairs, run the following:
 ```
 python scripts/lfw_ingestion_script.py
 ```
-      
-  This should download lfw data set(170MG) and saves/creates data/manifest.json & data/pairs/
-    
-
+This should download lfw data set(170MG) and saves/creates data/manifest.json & data/pairs/
+<br/>
 
 3. To verify the pair splits, run the following:
 ```
 python -c "import numpy as np; pairs = np.load('data/pairs/train_pairs.npy'); labels = np.load('data/pairs/train_labels.npy'); print('pairs shape:', pairs.shape); print('positive pairs:', labels.sum()); print('negative pairs:', (labels==0).sum())"
 ```
-  Expected Output:
+
+Expected Output:
   - pairs shape: (3000, 2)
   - positive pairs: 1500
   - negative pairs: 1500
-
+<br/>
 
 
 4. To verify determinism, run ingestion script a 2nd time:
 ```
 python scripts/lfw_ingestion_script.py
 ```    
-  Then compare new data/manifest.json with the 1st run's manifest summary printed on the command terminal and check if they have identical counts. to comfirm determinism
-       
+  
+Then compare new data/manifest.json with the 1st run's manifest summary printed on the command terminal and check if they have identical counts. to comfirm determinism
+<br/>  
 
 
 5. To run the Similarity Benchmark test, run the following:
 ```
 python scripts/benchmark_similarity.py
 ```
-  This will provide a output showing the comparision of using the loop vs Numpy for both cosine and euclidean calculations. It also has a unit test at the end checking the math of the math functions.
-
+  
+This will provide a output showing the comparision of using the loop vs Numpy for both cosine and euclidean calculations. It also has a unit test at the end checking the math of the math functions.
 
 
 Design Choices:
