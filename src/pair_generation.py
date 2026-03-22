@@ -18,19 +18,21 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
     #build identity to image indinces
     id_to_indices = {}
     for idx, label in enumerate(labels):
-        id_to_indices.setdefault(int(label), []).append(idx)
+        id_to_indices.setdefault(int(label), []).append(idx)   #is 2nd argument for setdefault supposed to be the image values?
 
 
-    # only for 2+ images can form a pos pair
+    # only for 2+ images can form a pos pair  (only people with 2+ images of them can form pairs with pos labels)
     multi = {k: np.array(v) for k, v in id_to_indices.items() if len(v) >= 2}
     all_ids = list(id_to_indices.keys())
 
+    # this sets up the projected number of positive and negative pairs that this function will generate
     n_pos = int(num_pairs * positive_ratio)
     n_neg = num_pairs - n_pos
 
+    # instantiating variable for final set of pairs and corresponding labels
     pairs, pair_labels = [], []
     
-    #pos pairs same identity 2 images
+    #generates n_pos of pos pairs (same identity 2 images)
     pos_ids= list(multi.keys())
     for _ in range(n_pos):   #not using index hence naming i _
         identity = pos_ids[rng.integers(len(pos_ids))]
@@ -38,7 +40,7 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
         pairs.append([int(a), int(b)])
         pair_labels.append(1)
 
-    #neg pairs 2 diffrent identity 2 images
+    #generates n_neg of neg pairs (2 diffrent identity 2 images)
     for _ in  range(n_neg):
         i, j = rng.choice(len(all_ids), size = 2, replace=False)
         id_a, id_b = all_ids[i], all_ids[j]
@@ -47,11 +49,11 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
         pairs.append([int(a), int(b)])
         pair_labels.append(0)
 
+    #changing pairs and pair_labels to np arrays for faster/easier operating in future use
     pairs = np.array(pairs, dtype=np.int32)
     pair_labels = np.array(pair_labels, dtype=np.int32)
 
     # shuffle 
-
     perm = rng.permutation(len(pairs))
     return pairs[perm], pair_labels[perm]
 
@@ -70,7 +72,8 @@ def save_pairs(pairs, pair_labels, split_name, pairs_dir):
         "negative_pairs": int((pair_labels == 0).sum()),
 
     }
-    #generate and save pairs for every split. Takes in -config(loaded yaml config dictionary) -splits_labled(dictionary of split names to a labled array) 
+
+#generate and save pairs for every split. Takes in -config(loaded yaml config dictionary) -splits_labled(dictionary of split names to a labled array) 
 def generate_all_splits(config, splits_labels): 
     pair_cfg = config["pairs"]
     pairs_dir = config["paths"]["pairs_dir"]
