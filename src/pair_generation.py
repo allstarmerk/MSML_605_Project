@@ -82,7 +82,12 @@ def generate_all_splits(config, splits_labels):
 
     for split_name, labels in splits_labels.items():
         num_pairs = pair_cfg["num_pairs_per_split"][split_name]
-        split_seed = base_seed + hash(split_name) % 1000  # derivin a deterministic seed split like project requirments call for 
+        # Using a hardcoded offset per split instead of hash(split_name) because Python's hash() is
+        # randomized on every interpreter startup (PYTHONHASHSEED), making hash-based seeds non-reproducible
+        # across runs. This fixed offset ensures the same seed is derived every time, satisfying the
+        # determinism requirement of Milestone 1.
+        split_offsets = {"train": 0, "val": 1, "test": 2}
+        split_seed = base_seed + split_offsets[split_name]
 
         pairs, pair_labels = generate_pairs(
             labels = labels,
