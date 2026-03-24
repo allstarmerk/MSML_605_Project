@@ -1,5 +1,6 @@
 import sys
 import os
+import argparse
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -117,6 +118,18 @@ def evaluate_split(split_name, images, pairs, labels,
 
 
 def main():
+    # pass run IDs via --val-run-id and --test-run-id arguments, for example:
+    # Baseline:  python scripts/run_evaluation.py --val-run-id run2_val_selected_threshold --test-run-id run3_test_final_baseline
+    # Post-cap:  python scripts/run_evaluation.py --val-run-id run5_val_post_cap --test-run-id run5_test_post_cap
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--val-run-id",  type=str, default="eval_val",
+                        help="Run ID for the val split evaluation")
+    parser.add_argument("--test-run-id", type=str, default="eval_test",
+                        help="Run ID for the test split evaluation")
+    parser.add_argument("--note", type=str, default="Evaluation at selected threshold.",
+                        help="Short note describing this run")
+    args = parser.parse_args()
+
     config = load_config()
 
     eval_config_path = Path(root_path) / "configs" / "eval.yaml"
@@ -132,7 +145,7 @@ def main():
     print("Loading LFW dataset...")
     splits, _ = load_lfw(config)
 
-    # Run 2  evaluate val split at selected threshold and record confusion matrix
+    # evaluate val split at selected threshold and record confusion matrix
     validate_pair_files(pairs_dir, "val")
     val_pairs, val_labels = load_pairs(pairs_dir, "val")
     evaluate_split(
@@ -142,13 +155,12 @@ def main():
         labels=val_labels,
         threshold=threshold,
         out_dir=out_dir,
-        run_id="run2_val_selected_threshold",
-        note=f"Run 2 - Val split at selected threshold {threshold:.4f}. "
-             f"Threshold chosen by max balanced accuracy on val sweep (Run 1).",
+        run_id=args.val_run_id,
+        note=args.note + f" Val split. Threshold={threshold:.4f}.",
     )
 
-    # Run 3  final report on test split at the locked threshold
-    # threshold is NOT tuned on test it is locked from the val sweep
+    # evaluate test split at the locked threshold
+    # threshold is NOT tuned on test — it is locked from the val sweep
     validate_pair_files(pairs_dir, "test")
     test_pairs, test_labels = load_pairs(pairs_dir, "test")
     evaluate_split(
@@ -158,13 +170,12 @@ def main():
         labels=test_labels,
         threshold=threshold,
         out_dir=out_dir,
-        run_id="run3_test_final_baseline",
-        note=f"Run 3 - Final baseline test report at locked threshold {threshold:.4f}. "
-             f"Threshold was NOT tuned on test split.",
+        run_id=args.test_run_id,
+        note=args.note + f" Test split. Threshold was NOT tuned on test.",
     )
 
     print("\nEvaluation complete.")
-    print("Runs 2 and 3 logged to outputs/runs.jsonl")
+    print(f"Runs logged to outputs/runs.jsonl")
     print("Confusion matrices saved to outputs/")
 
 
