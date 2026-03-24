@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import argparse
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -10,6 +11,9 @@ import yaml
 
 # Sweeps thresholds on the val split, and will tell you what to set the
 # "selected_threshold" that we will set in eval.yaml to
+# Pass a run ID via --run-id argument, for example:
+#   python scripts/threshold_sweep.py --run-id run1_sweep_val_baseline
+#   python scripts/threshold_sweep.py --run-id run4_sweep_val_post_cap
 
 root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_path)
@@ -87,6 +91,13 @@ def save_sweep_results(results, out_dir):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run-id", type=str, default="sweep_val",
+                        help="Unique run identifier logged to outputs/runs.jsonl")
+    parser.add_argument("--note", type=str, default="Threshold sweep on val split.",
+                        help="Short note describing what changed in this run")
+    args = parser.parse_args()
+
     config = load_config()
 
     eval_config_path = Path(root_path) / "configs" / "eval.yaml"
@@ -137,15 +148,14 @@ def main():
     save_roc_plot(results, out_dir)
     save_sweep_results(results, out_dir)
 
-    # log this as Run 1
+    # log this run using the run ID passed via --run-id argument
     log_run(
-        run_id="run1_sweep_val_baseline",
+        run_id=args.run_id,
         split="val",
         metric_name="cosine",
         threshold=best["threshold"],
         metrics=best,
-        note="Run 1 - Baseline threshold sweep on val split. "
-             "Best threshold selected by max balanced accuracy.",
+        note=args.note,
     )
 
     print(f"\n>>> ACTION REQUIRED: Open configs/eval.yaml and set:")

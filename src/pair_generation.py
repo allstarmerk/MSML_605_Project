@@ -12,7 +12,7 @@ import numpy as np
 # "num pairs" are the total pairs we are generating
 # "seed" the random seed defined in config file /config/dataset.yaml
 #We return the "pairs" indices into the iamge array and "pair labels" labels defined above line 7
-def generate_pairs(labels, num_pairs, positive_ratio, seed):
+def generate_pairs(labels, num_pairs, positive_ratio, seed, max_images_per_identity=999):  # 999 is a fallback default only — real value always comes from dataset.yaml via generate_all_splits()
     rng = np.random.default_rng(seed)
 
     #build identity to image indinces
@@ -20,6 +20,14 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
     for idx, label in enumerate(labels):
         id_to_indices.setdefault(int(label), []).append(idx)   #is 2nd argument for setdefault supposed to be the image values?
 
+    # Data-centric improvement: cap each identity at max_images_per_identity before
+    # generating pairs. Without this, identity 1871 has 530 images and dominates
+    # the pair distribution. Capping makes pairs more balanced across identities.
+    # Controlled via dataset.yaml — set 999 for baseline, 20 for improved version.
+    id_to_indices = {
+        k: list(rng.choice(v, size=min(len(v), max_images_per_identity), replace=False))
+        for k, v in id_to_indices.items()
+    }
 
     # only for 2+ images can form a pos pair  (only people with 2+ images of them can form pairs with pos labels)
     multi = {k: np.array(v) for k, v in id_to_indices.items() if len(v) >= 2}
@@ -94,6 +102,7 @@ def generate_all_splits(config, splits_labels):
             num_pairs = num_pairs,
             positive_ratio = pair_cfg["positive_ratio"],
             seed = split_seed,
+            max_images_per_identity = pair_cfg.get("max_images_per_identity", 999),
         )
         all_meta[split_name] = save_pairs(pairs, pair_labels, split_name, pairs_dir)
 
