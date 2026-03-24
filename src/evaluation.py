@@ -24,4 +24,8 @@ def compute_metrics(predictions, labels):
     tn = int(((predictions == 0) & (labels == 0)).sum())
     fn = int(((predictions == 0) & (labels == 1)).sum())
     accuracy = (tp + tn) / (tp + fp + tn + fn)
+    tpr = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    fpr = fp / (fp + tn) if (fp + tn) > 0 else 0.0
+    #percision =  out of all the pairs it predicted as matches, how many were actually matches.
     
+
