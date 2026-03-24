@@ -6,10 +6,12 @@ from pathlib import Path
 VALID_SPLITS = {"train", "val", "test"}
 
 def validate_pairs(pairs, labels, split_name):  #checks if the pairs and labels are valid for the given split
-    #check if split name is valid forst
-
+    #check if split name is valid 
+    assert split_name in VALID_SPLITS, \
+    f"Invalid split name: '{split_name}'. Must be one of {VALID_SPLITS}."
     # check the types
-
+    assert isinstance(pairs, np.ndarray), "Pairs should be a numpy array"
+    assert isinstance(labels, np.ndarray), "Labels should be a numpy array"
     #check the shape
 
     # check the len matches
