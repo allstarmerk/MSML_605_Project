@@ -6,22 +6,35 @@ from pathlib import Path
 VALID_SPLITS = {"train", "val", "test"}
 
 def validate_pairs(pairs, labels, split_name):  #checks if the pairs and labels are valid for the given split
+   
     #check if split name is valid 
     assert split_name in VALID_SPLITS, \
     f"Invalid split name: '{split_name}'. Must be one of {VALID_SPLITS}."
+
     # check the types
     assert isinstance(pairs, np.ndarray), "Pairs should be a numpy array"
     assert isinstance(labels, np.ndarray), "Labels should be a numpy array"
+
     #check the shape
-
+    assert pairs.ndim == 2 and pairs.shape[1] == 2, \
+        f"Pairs should have shape (N, 2), but got {pairs.shape}"
+    
     # check the len matches
-
+    assert len(pairs) == len(labels), \
+        f"Number of pairs ({len(pairs)}) does not match number of labels ({len(labels)})"
+    
     #check labels are binary
-
+    unique = set(np.unique(labels).tolist())
+    assert unique.issubset({0, 1}), \
+        f"Labels should be binary (0 or 1), but got unique values: {unique}"
+                 
     #check not empty
+    assert len(pairs) > 0, "Pairs array is empty"
+
 
 def validate_scores(scores, pairs):
     #verify score count matches pair count
+    
 
     #check for non NAN values or infinite values from numpy math errors
 
