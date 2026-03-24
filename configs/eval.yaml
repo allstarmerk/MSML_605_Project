@@ -1,1 +1,18 @@
-#After running the threshold sweep, update the eval.yaml file with the best threshold and the corresponding metrics. This will allow us to easily reference the best performing threshold and its metrics for future evaluations and comparisons.
+# Evaluation configuration for Milestone 2
+# After running the threshold sweep, update the eval.yaml file with the best threshold
+# and the corresponding metrics. This will allow us to easily reference the best
+# performing threshold and its metrics for future evaluations and comparisons.
+
+threshold_sweep:
+  min: 0.0
+  max: 1.0
+  steps: 200
+
+# Rule: pick the threshold that maximizes balanced accuracy on the val split.
+# Update this value after running scripts/threshold_sweep.py
+selected_threshold: 0.5
+
+# Scoring method used for pair evaluation
+score_metric: "cosine"              # options: "cosine" or "euclidean"
+score_direction: "higher_is_similar"  # cosine: higher score = more similar
+                                      # euclidean: change to "lower_is_similar"
