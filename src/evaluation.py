@@ -24,8 +24,18 @@ def compute_metrics(predictions, labels):
     tn = int(((predictions == 0) & (labels == 0)).sum())
     fn = int(((predictions == 0) & (labels == 1)).sum())
     accuracy = (tp + tn) / (tp + fp + tn + fn)
+    #High TPR = good at catching real matches
+    #Low FPR = good at rejecting impostors
     tpr = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     fpr = fp / (fp + tn) if (fp + tn) > 0 else 0.0
     #percision =  out of all the pairs it predicted as matches, how many were actually matches.
-    
-
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    #the balance between true positive rate and percision
+    f1_score = 2 * (precision * tpr) / (precision + tpr) if (precision + tpr) > 0 else 0.0
+    balanced_accuracy = (tpr +(1-fpr)) / 2  #average of true positive rate and true negative rate (which is 1 - false positive rate) to pick a threashold because its balance between both despite the dataset being imbalanced
+    return {
+        "accuracy": accuracy, "true_positive_rate": tpr, 
+        "false_positive_rate": fpr, "precision": precision, 
+        "f1_score": f1_score, "balanced_accuracy": balanced_accuracy,
+        "tp": tp, "fp": fp, "tn": tn, "fn": fn
+    }
