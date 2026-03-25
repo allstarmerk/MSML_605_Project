@@ -87,6 +87,9 @@ python scripts/run_evaluation.py --val-run-id run2_val_selected_threshold --test
 ```
 
 **After data-centric improvement (runs 4-5):**
+
+> **Threshold selection rule (same as baseline):** Maximize balanced accuracy on the validation split. Update `selected_threshold` in configs/eval.yaml with the value printed by the sweep before running evaluation.
+
 ```
 # Set max_images_per_identity: 20 in configs/dataset.yaml first
 python scripts/lfw_ingestion_script.py
