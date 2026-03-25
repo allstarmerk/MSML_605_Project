@@ -63,6 +63,40 @@ Design Choices:
 
   - Most of the settings needed are hard coded in /configs/dataset.yaml
 
+---
+
+## Milestone 2 — Evaluation Loop
+
+> **Note:** Complete all Milestone 1 steps first (environment setup, LFW ingestion, and pair generation — steps 1-4 above) before running any Milestone 2 commands.
+
+Builds a reproducible evaluation loop on top of the Milestone 1 pipeline. Includes threshold calibration on the validation split, experiment tracking, error analysis, and tests.
+
+**Threshold selection rule:** Maximize balanced accuracy on the validation split. The selected threshold is stored in configs/eval.yaml.
+
+**Data-centric improvement:** Capped overrepresented identities at 20 images each before generating pairs. Identity 1871 had 530 images and dominated the pair distribution. Controlled via `max_images_per_identity` in configs/dataset.yaml — set to 999 for baseline (no cap), 20 for the improved version.
+
+### Milestone 2 — How to run
+
+**Baseline (runs 1-3):**
+```
+# Set max_images_per_identity: 999 in configs/dataset.yaml first
+python scripts/lfw_ingestion_script.py
+python scripts/threshold_sweep.py --run-id run1_sweep_val_baseline --note "Baseline threshold sweep on val split"
+# Update selected_threshold in configs/eval.yaml with the value printed above
+python scripts/run_evaluation.py --val-run-id run2_val_selected_threshold --test-run-id run3_test_final_baseline --note "Baseline evaluation"
+```
+
+**After data-centric improvement (runs 4-5):**
+```
+# Set max_images_per_identity: 20 in configs/dataset.yaml first
+python scripts/lfw_ingestion_script.py
+python scripts/threshold_sweep.py --run-id run4_sweep_val_post_cap --note "Sweep after capping identities at 20 images"
+# Update selected_threshold in configs/eval.yaml with the value printed above
+python scripts/run_evaluation.py --val-run-id run5_val_post_cap --test-run-id run5_test_post_cap --note "Run 5 - Evaluation after capping identities at 20 images per identity"
+```
+
+
+
 
 
 
