@@ -24,3 +24,6 @@ Thumbs.db
 
 .vscode/
 .idea/
+
+
+outputs/sweep_results.json
