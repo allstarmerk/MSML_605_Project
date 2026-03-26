@@ -27,3 +27,5 @@ Thumbs.db
 
 
 outputs/sweep_results.json
+outputs/false_positives/
+outputs/false_negatives/

@@ -115,37 +115,49 @@ def log_run(run_id, split, metric_name, threshold, metrics, note,
     return record
 
 
-def log_errors(run_id, split_name, error_images, error_pairs, errors_path):
+def log_errors(run_id, split_name, error_images, error_pairs, errors_path,
+               error_type="error", max_pairs=10):
+    # save FP or FN pair images to disk and write the pair index list to pairs_list.jsonl
+    # error_images: shape (N, 2, H, W, C) — both images for each error pair
+    # error_pairs:  shape (N, 2)           — image indices for each error pair (for filenames)
+    # errors_path:  directory to write into (e.g. outputs/false_positives/{run_id}/)
+    # error_type:   label shown in composite title — "FP" or "FN"
+    # max_pairs:    how many pairs to save images for (None = all)
+    import matplotlib.pyplot as plt
     Path(errors_path).mkdir(parents=True, exist_ok=True)
-    """try:
-        commit = subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"],
-            stderr=subprocess.DEVNULL
-        ).decode().strip()
-    except Exception:
-        commit = "unknown"
-    """
-    # save error_images to directory for error analysis
-    project_root = Path (__file__).resolve().parent.parent
-    eval_config_path = project_root / "configs" / "eval.yaml"
 
-    imagePath = errors_path + "images/"
-    Path(imagePath).mkdir(parents=True, exist_ok=True)
+    n_total = error_pairs.shape[0]
+    n_save  = n_total if max_pairs is None else min(max_pairs, n_total)
 
-    # images should be in the same order as pairs in pairs_list; every 2 images is a pair
-    for pair_id in range(error_pairs.shape[0]):
-        img1, img2 = error_images[pair_id,0], error_images[pair_id,1]
-        img1_id, img2_id = error_pairs[pair_id,0], error_pairs[pair_id,1]
+    composites_path = errors_path + "composites/"
+    Path(composites_path).mkdir(parents=True, exist_ok=True)
 
-        image.imsave(fname=f"{imagePath}pair{pair_id}_img{img1_id}.jpg", arr=img1)
-        image.imsave(fname=f"{imagePath}pair{pair_id}_img{img2_id}.jpg", arr=img2)
+    for pair_id in range(n_save):
+        img1, img2 = error_images[pair_id, 0], error_images[pair_id, 1]
+        img1_id, img2_id = error_pairs[pair_id, 0], error_pairs[pair_id, 1]
 
+        # side-by-side composite with labels so both images are visible at once
+        fig, axes = plt.subplots(1, 2, figsize=(6, 3))
+        axes[0].imshow(img1)
+        axes[0].set_title(f"img {img1_id}")
+        axes[0].axis("off")
+        axes[1].imshow(img2)
+        axes[1].set_title(f"img {img2_id}")
+        axes[1].axis("off")
+        fig.suptitle(f"{error_type} | pair {pair_id} | {split_name}", fontsize=10)
+        plt.tight_layout()
+        plt.savefig(f"{composites_path}pair{pair_id}.jpg", dpi=100)
+        plt.close()
 
+    # always write the full pair index list regardless of max_pairs
     record = {
-        "split":    split_name,
-        "mislabeled pairs":   error_pairs.tolist(),
+        "run_id":          run_id,
+        "split":           split_name,
+        "total_errors":    n_total,
+        "images_saved":    n_save,
+        "mislabeled pairs": error_pairs.tolist(),
     }
     with open(errors_path + "pairs_list.jsonl", "a") as f:
         f.write(json.dumps(record) + '\n')
 
-    print(f"Errors from '{run_id}' logged to {errors_path}")
+    print(f"  {error_type}: {n_total} pairs total, {n_save} composites saved to {composites_path}")

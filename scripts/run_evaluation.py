@@ -120,8 +120,8 @@ def evaluate_split(split_name, images, pairs, labels,
     print(f"  TP={metrics['tp']}  FP={metrics['fp']}  "
           f"TN={metrics['tn']}  FN={metrics['fn']}")
 
-    log_errors(run_id,split_name,fp_images,fp_slice,errors_path="outputs/false_positives/")
-    log_errors(run_id,split_name,fn_images,fn_slice,errors_path="outputs/false_negatives/")
+    log_errors(run_id, split_name, fp_images, fp_slice, errors_path=f"outputs/false_positives/{run_id}/", error_type="FP")
+    log_errors(run_id, split_name, fn_images, fn_slice, errors_path=f"outputs/false_negatives/{run_id}/", error_type="FN")
 
     return metrics
 
