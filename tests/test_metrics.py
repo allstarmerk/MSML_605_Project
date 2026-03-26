@@ -56,3 +56,28 @@ def test_compute_metrics_perfect():
 
 
 
+def test_compute_metrics_required_keys():
+    # the dict returned by compute_metrics must always contain every key that
+    # validate_metrics and the run logger expect: a missing key would silently
+    # produce an incomplete log entry or crash the report generation
+    labels      = np.array([1, 0, 1, 0])
+    predictions = np.array([1, 0, 0, 1])
+    m = compute_metrics(labels, predictions)
+
+    required = {
+        "accuracy", "balanced_accuracy", "true_positive_rate",
+        "false_positive_rate", "precision", "f1_score",
+        "tp", "fp", "tn", "fn", "total",
+    }
+    assert required.issubset(set(m.keys()))
+
+
+
+def test_compute_metrics_f1_no_positive_predictions():
+    # when the model predicts all negative, precision and F1 are undefined (0/0)
+    #  the function must return 0.0 for both rather than raising a ZeroDivisionError
+    labels      = np.array([1, 1, 0, 0])
+    predictions = np.array([0, 0, 0, 0])
+    m = compute_metrics(labels, predictions)
+    assert m["f1_score"]  == 0.0
+    assert m["precision"] == 0.0
