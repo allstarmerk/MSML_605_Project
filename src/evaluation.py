@@ -106,7 +106,7 @@ def log_run(run_id, split, metric_name, threshold, metrics, note,
     return record
 
 
-def log_errors(run_id, split, error_slice, errors_path="outputs/false_positives.jsonl"):
+def log_errors(run_id, split_name, error_slice, errors_path="outputs/false_positives.jsonl"):
     Path(errors_path).parent.mkdir(parents=True, exist_ok=True)
     """try:
         commit = subprocess.check_output(
@@ -116,7 +116,11 @@ def log_errors(run_id, split, error_slice, errors_path="outputs/false_positives.
     except Exception:
         commit = "unknown"
     """
+    record = {
+        "split":    split_name,
+        "mislabeled pairs":   error_slice.tolist(),
+    }
     with open(errors_path, "a") as f:
-        f.write(json.dumps(error_slice.tolist()))
+        f.write(json.dumps(record) + '\n')
 
     print(f"Errors from '{run_id} logged to {errors_path}")
