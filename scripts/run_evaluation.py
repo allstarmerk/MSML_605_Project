@@ -76,14 +76,6 @@ def save_confusion_matrix(metrics, split_name, threshold, out_dir):
     print(f"Confusion matrix saved to {out_path}")
 
 
-# returns 2 arrays containing pairs of False Positives and False Negatives
-"""def error_slices(pairs, labels, predictions):
-    fp_slice = pairs[(predictions == 1) & (labels == 0)]
-    fn_slice = pairs[(predictions == 0) & (labels == 1)]
-    
-    return fp_slice, fn_slice
-"""
-
 
 def evaluate_split(split_name, images, pairs, labels,
                    threshold, out_dir, run_id, note):
@@ -100,8 +92,9 @@ def evaluate_split(split_name, images, pairs, labels,
     # convert scores to binary same/different decisions using the threshold
     predictions = apply_threshold(scores, threshold, higher_is_similar=True)
 
-    # generate slice of FPs and FNs for error analysis
+    # extract pair IDs and corresponding images of FPs and FNs for error analysis
     fp_slice, fn_slice = error_slices(pairs, labels, predictions)
+    fp_images, fn_images = images[fp_slice], images[fn_slice]
 
     # compute all metrics and validate the output
     metrics = compute_metrics(labels, predictions)
@@ -128,8 +121,8 @@ def evaluate_split(split_name, images, pairs, labels,
     print(f"  TP={metrics['tp']}  FP={metrics['fp']}  "
           f"TN={metrics['tn']}  FN={metrics['fn']}")
     
-    log_errors(run_id,split_name,fp_slice,errors_path="outputs/false_positives.jsonl")
-    log_errors(run_id,split_name,fn_slice,errors_path="outputs/false_negatives.jsonl")
+    log_errors(run_id,split_name,fp_images,fp_slice,errors_path="outputs/false_positives/")
+    log_errors(run_id,split_name,fn_images,fn_slice,errors_path="outputs/false_negatives/")
 
     return metrics
 

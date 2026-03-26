@@ -16,3 +16,7 @@ selected_threshold: 0.9196
 score_metric: "cosine"              # options: "cosine" or "euclidean"
 score_direction: "higher_is_similar"  # cosine: higher score = more similar
                                       # euclidean: change to "lower_is_similar"
+
+paths:
+  fp_imgs: "outputs/false_positive/images/"
+  fn_imgs: "outputs/false_negative/images/"

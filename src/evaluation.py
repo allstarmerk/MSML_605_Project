@@ -3,6 +3,7 @@ import datetime
 import subprocess
 import numpy as np
 from pathlib import Path
+from matplotlib import image
 from src.similarity import cosine_similarity, euclidean_distance, flatten_embedding
 
 
@@ -73,6 +74,7 @@ def compute_metrics(labels, predictions):
         "total": total,
     }
 
+# returns 2 arrays containing pairs of False Positives and False Negatives
 def error_slices(pairs, labels, predictions):
     fp_slice = pairs[(predictions == 1) & (labels == 0)]
     fn_slice = pairs[(predictions == 0) & (labels == 1)]
@@ -112,8 +114,8 @@ def log_run(run_id, split, metric_name, threshold, metrics, note,
     return record
 
 
-def log_errors(run_id, split_name, error_slices, errors_path="outputs/false_positives.jsonl"):
-    Path(errors_path).parent.mkdir(parents=True, exist_ok=True)
+def log_errors(run_id, split_name, error_images, error_pairs, errors_path):
+    Path(errors_path).mkdir(parents=True, exist_ok=True)
     """try:
         commit = subprocess.check_output(
             ["git", "rev-parse", "--short", "HEAD"],
@@ -122,11 +124,27 @@ def log_errors(run_id, split_name, error_slices, errors_path="outputs/false_posi
     except Exception:
         commit = "unknown"
     """
+    # save error_images to directory for error analysis
+    project_root = Path (__file__).resolve().parent.parent
+    eval_config_path = project_root / "configs" / "eval.yaml"
+
+    imagePath = errors_path + "images/"
+    Path(imagePath).mkdir(parents=True, exist_ok=True)
+
+    # images should be in the same order as pairs in pairs_list; every 2 images is a pair
+    for pair_id in range(error_pairs.shape[0]):
+        img1, img2 = error_images[pair_id,0], error_images[pair_id,1]
+        img1_id, img2_id = error_pairs[pair_id,0], error_pairs[pair_id,1]
+        
+        image.imsave(fname=f"{imagePath}pair{pair_id}_img{img1_id}.jpg", arr=img1)
+        image.imsave(fname=f"{imagePath}pair{pair_id}_img{img2_id}.jpg", arr=img2)
+        
+
     record = {
         "split":    split_name,
-        "mislabeled pairs":   error_slices.tolist(),
+        "mislabeled pairs":   error_pairs.tolist(),
     }
-    with open(errors_path, "a") as f:
+    with open(errors_path + "pairs_list.jsonl", "a") as f:
         f.write(json.dumps(record) + '\n')
 
     print(f"Errors from '{run_id}' logged to {errors_path}")
