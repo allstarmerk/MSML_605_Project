@@ -19,6 +19,7 @@ from src.data_ingestion import load_config, load_lfw
 from src.evaluation import (
     score_pairs_cosine,
     apply_threshold,
+    error_slices,
     compute_metrics,
     log_run,
     log_errors,
@@ -76,12 +77,12 @@ def save_confusion_matrix(metrics, split_name, threshold, out_dir):
 
 
 # returns 2 arrays containing pairs of False Positives and False Negatives
-def error_slices(pairs, labels, predictions):
+"""def error_slices(pairs, labels, predictions):
     fp_slice = pairs[(predictions == 1) & (labels == 0)]
     fn_slice = pairs[(predictions == 0) & (labels == 1)]
     
     return fp_slice, fn_slice
-
+"""
 
 
 def evaluate_split(split_name, images, pairs, labels,

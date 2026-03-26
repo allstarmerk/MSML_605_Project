@@ -73,6 +73,12 @@ def compute_metrics(labels, predictions):
         "total": total,
     }
 
+def error_slices(pairs, labels, predictions):
+    fp_slice = pairs[(predictions == 1) & (labels == 0)]
+    fn_slice = pairs[(predictions == 0) & (labels == 1)]
+    
+    return fp_slice, fn_slice
+
 
 def log_run(run_id, split, metric_name, threshold, metrics, note,
             runs_path="outputs/runs.jsonl"):
@@ -106,7 +112,7 @@ def log_run(run_id, split, metric_name, threshold, metrics, note,
     return record
 
 
-def log_errors(run_id, split_name, error_slice, errors_path="outputs/false_positives.jsonl"):
+def log_errors(run_id, split_name, error_slices, errors_path="outputs/false_positives.jsonl"):
     Path(errors_path).parent.mkdir(parents=True, exist_ok=True)
     """try:
         commit = subprocess.check_output(
@@ -118,9 +124,9 @@ def log_errors(run_id, split_name, error_slice, errors_path="outputs/false_posit
     """
     record = {
         "split":    split_name,
-        "mislabeled pairs":   error_slice.tolist(),
+        "mislabeled pairs":   error_slices.tolist(),
     }
     with open(errors_path, "a") as f:
         f.write(json.dumps(record) + '\n')
 
-    print(f"Errors from '{run_id} logged to {errors_path}")
+    print(f"Errors from '{run_id}' logged to {errors_path}")
