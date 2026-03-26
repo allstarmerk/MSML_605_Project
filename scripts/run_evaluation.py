@@ -21,6 +21,8 @@ from src.evaluation import (
     apply_threshold,
     compute_metrics,
     log_run,
+    error_slices,
+    log_errors,
 )
 from src.validation import (
     validate_pair_files,
@@ -89,14 +91,18 @@ def evaluate_split(split_name, images, pairs, labels,
     # convert scores to binary same/different decisions using the threshold
     predictions = apply_threshold(scores, threshold, higher_is_similar=True)
 
+    # extract pair IDs and corresponding images of FPs and FNs for error analysis
+    fp_slice, fn_slice = error_slices(pairs, labels, predictions)
+    fp_images, fn_images = images[fp_slice], images[fn_slice]
+
     # compute all metrics and validate the output
     metrics = compute_metrics(labels, predictions)
     validate_metrics(metrics)
 
-    
+
     save_confusion_matrix(metrics, split_name, threshold, out_dir)
 
-    
+
     log_run(
         run_id=run_id,
         split=split_name,
@@ -113,6 +119,9 @@ def evaluate_split(split_name, images, pairs, labels,
     print(f"  F1:                {metrics['f1_score']:.4f}")
     print(f"  TP={metrics['tp']}  FP={metrics['fp']}  "
           f"TN={metrics['tn']}  FN={metrics['fn']}")
+
+    log_errors(run_id,split_name,fp_images,fp_slice,errors_path="outputs/false_positives/")
+    log_errors(run_id,split_name,fn_images,fn_slice,errors_path="outputs/false_negatives/")
 
     return metrics
 
