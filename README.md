@@ -73,7 +73,7 @@ Builds a reproducible evaluation loop on top of the Milestone 1 pipeline. Includ
 
 **Threshold selection rule:** Maximize balanced accuracy on the validation split. The selected threshold is stored in configs/eval.yaml.
 
-**Data-centric improvement:** Capped overrepresented identities at 20 images each before generating pairs. Identity 1871 had 530 images and dominated the pair distribution. Controlled via `max_images_per_identity` in configs/dataset.yaml — set to 999 for baseline (no cap), 20 for the improved version.
+**Data-centric improvement:** Capped overrepresented identities at 20 images each before generating pairs. Identity 1871 had 530 images and dominated the pair distribution. Controlled via `max_images_per_identity` in configs/dataset.yaml — set to 999 for baseline (no cap on # of images per identity), 20 for the improved version for the data esentric change.
 
 ### Milestone 2 — How to run
 
