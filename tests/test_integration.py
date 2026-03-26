@@ -30,3 +30,68 @@ def make_synthetic_dataset(seed=0):
     return np.array(images), np.array(labels_per_image)
 
 
+def make_synthetic_pairs(identity_labels, num_pairs=100, positive_ratio=0.5, seed=1):
+    rng = np.random.default_rng(seed)
+    n_positive = int(num_pairs * positive_ratio)
+    n_negative = num_pairs - n_positive
+
+    id_to_indices = {}
+    for idx, identity in enumerate(identity_labels):
+        id_to_indices.setdefault(identity, []).append(idx)
+
+    identities = list(id_to_indices.keys())
+    pairs, labels = [], []
+
+    # positive pairs: two images from same identity
+    for _ in range(n_positive):
+        identity = rng.choice(identities)
+        i, j = rng.choice(id_to_indices[identity], size=2, replace=False)
+        pairs.append([i, j])
+        labels.append(1)
+
+    # negative pairs: two images from different identities
+    for _ in range(n_negative):
+        id_a, id_b = rng.choice(identities, size=2, replace=False)
+        i = rng.choice(id_to_indices[id_a])
+        j = rng.choice(id_to_indices[id_b])
+        pairs.append([i, j])
+        labels.append(0)
+
+    return np.array(pairs), np.array(labels)
+
+
+# ── Integration tests ─────────────────────────────────────────────────────────
+
+class TestEndToEndPipeline:
+
+    def setup_method(self):
+        self.images, self.id_labels = make_synthetic_dataset(seed=42)
+        self.pairs, self.labels = make_synthetic_pairs(
+            self.id_labels, num_pairs=100, positive_ratio=0.5, seed=99
+        )
+
+    def test_cosine_same_person_higher_than_different(self):
+        # same-person pairs should have higher cosine similarity on average
+        scores = score_pairs_cosine(self.images, self.pairs)
+        same_mean  = scores[self.labels == 1].mean()
+        diff_mean  = scores[self.labels == 0].mean()
+        assert same_mean > diff_mean, (
+            f"Same-person mean ({same_mean:.4f}) should exceed "
+            f"different-person mean ({diff_mean:.4f})"
+        )
+
+    def test_full_pipeline_smoke(self):
+        # run the complete pipeline without any assertion errors end-to-end
+        validate_pairs(self.pairs, self.labels, "test")
+        scores = score_pairs_cosine(self.images, self.pairs)
+        validate_scores(scores, self.pairs)
+
+        threshold = 0.9990
+        validate_threshold(threshold)
+
+        predictions = apply_threshold(scores, threshold, higher_is_similar=True)
+        metrics     = compute_metrics(self.labels, predictions)
+        validate_metrics(metrics)
+
+        # sanity check: counts must add up to total
+        assert metrics["tp"] + metrics["fp"] + metrics["tn"] + metrics["fn"] == metrics["total"]
