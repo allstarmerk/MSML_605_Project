@@ -1,13 +1,31 @@
 # MSML_605_Project
-MSML/MSAI project. It's a facial recognition system similar to faceId
+MSML/MSAI project. It's a facial recognition system similar to faceId. Given two face images, the system produces a similarity score and makes a same-person vs. different-person decision using a calibrated threshold. Built on the LFW (Labeled Faces in the Wild) dataset.
 
 - Group: Johnathan Sheikh, Renae Ricketts
 
-- Main branch is for after bugs are fixed in working branch. Then we merge the working branch into the main branch. This allows for the main branch to be bug free and always in working condition. Then the end product will be the main branch. Working branch is essentialy the development branch and main being the production branch. 
+- Main branch is for after bugs are fixed in working branch. Then we merge the working branch into the main branch. This allows for the main branch to be bug free and always in working condition. Then the end product will be the main branch. Working branch is essentially the development branch and main being the production branch.
 
 - After you have work completed on the working branch you create a pull request. If u wanna use the UI of github you go to pull request. Click on create new pull request. Then you select the working branch and the main branch. Then you click on create pull request. Then you can add a description of the changes you made. Then you can click on create pull request again. Then the pull request will be created and you can see it in the pull request tab. Then you can merge the pull request if there are no conflicts. If there are conflicts then you have to resolve them before merging.
 
-How to run: 
+---
+
+## Repository Structure
+
+```
+MSML_605_Project-1/
+├── configs/          # dataset.yaml (splits, pairs, seeds) and eval.yaml (threshold settings)
+├── data/             # LFW images and generated pair files (gitignored — generated locally)
+├── outputs/          # Generated plots, confusion matrices, and run logs
+├── reports/          # Milestone 2 evaluation report PDF and figures
+├── scripts/          # Entry-point scripts for ingestion, sweeps, evaluation, and benchmarks
+├── src/              # Core importable modules (evaluation, validation, similarity, ingestion)
+├── tests/            # Unit tests and integration test
+└── requirements.txt
+```
+
+---
+
+How to run:
 
 1. To set up the environment, run the following commands:
 ```
@@ -23,7 +41,9 @@ pip install -r requirements.txt
 ```
 python scripts/lfw_ingestion_script.py
 ```
-- This should download lfw data set(170MG) and saves/creates data/manifest.json & data/pairs/
+- This should download lfw data set (170MB) and saves/creates data/manifest.json & data/pairs/
+- Generates train (3000 pairs), val (1000 pairs), and test (1000 pairs) splits — all 50/50 positive/negative
+- Uses seed 42 for both the train/val/test identity split and pair generation, ensuring full reproducibility
 <br/>
 
 
@@ -42,26 +62,38 @@ Expected Output:
 4. To verify determinism, run ingestion script a 2nd time:
 ```
 python scripts/lfw_ingestion_script.py
-```    
-  
-- Then compare new data/manifest.json with the 1st run's manifest summary printed on the command terminal and check if they have identical counts. to comfirm determinism
-<br/> 
+```
+
+- Then compare new data/manifest.json with the 1st run's manifest summary printed on the command terminal and check if they have identical counts to confirm determinism
+<br/>
 
 
 5. To run the Similarity Benchmark test, run the following:
 ```
 python scripts/benchmark_similarity.py
 ```
-  
-- This will provide a output showing the comparision of using the loop vs Numpy for both cosine and euclidean calculations. It also has a unit test at the end checking the math of the math functions.
+
+- This will provide an output showing the comparison of using the loop vs Numpy for both cosine and euclidean calculations. It also has a unit test at the end checking the math of the math functions.
+<br/>
+
+6. To run all tests (unit tests + integration test):
+```
+pytest tests/
+```
+- Tests do not require the LFW dataset — the integration test uses a small synthetic fixture and runs fully offline
+- Expected: all tests pass in a few seconds
 <br/>
 
 Design Choices:
-  - We use a hard coded seed in config/ to meet the determinisc requirment. Seed is fixed numpy, tensorflow, and python random.
+  - We use a hard coded seed in config/ to meet the deterministic requirement. Seed is fixed for numpy, tensorflow, and python random.
 
-  - Saved pair indices are saved as a .npy so evaluation is always accurate and reproducable
+  - Saved pair indices are saved as .npy files so evaluation is always accurate and reproducible. Pairs store image indices, not file paths, so the same pair file works regardless of where the dataset is stored locally.
 
-  - Most of the settings needed are hard coded in /configs/dataset.yaml
+  - Most of the settings needed are in /configs/dataset.yaml (splits, seeds, pair counts, image size, data-centric cap) and /configs/eval.yaml (threshold sweep range, selected threshold, scoring direction).
+
+  - Cosine similarity is used as the scoring function (higher score = more similar). The threshold is applied as: score >= threshold → same person. This direction is documented in eval.yaml under `score_direction`.
+
+  - The pipeline includes validation checks at every major step (pair file existence, pair shape and label validity, score count and finiteness, threshold numeric validity, and metric key completeness) so errors surface early with clear messages rather than silently producing wrong results.
 
 ---
 
@@ -71,9 +103,9 @@ Design Choices:
 
 Builds a reproducible evaluation loop on top of the Milestone 1 pipeline. Includes threshold calibration on the validation split, experiment tracking, error analysis, and tests.
 
-**Threshold selection rule:** Maximize balanced accuracy on the validation split. The selected threshold is stored in configs/eval.yaml.
+**Threshold selection rule:** Maximize balanced accuracy on the validation split. Balanced accuracy averages TPR and TNR, making it robust to class imbalance. The selected threshold is stored in `configs/eval.yaml` under `selected_threshold`. It is chosen on val and then applied to test without further tuning.
 
-**Data-centric improvement:** Capped overrepresented identities at 20 images each before generating pairs. Identity 1871 had 530 images and dominated the pair distribution. Controlled via `max_images_per_identity` in configs/dataset.yaml — set to 999 for baseline (no cap), 20 for the improved version.
+**Data-centric improvement:** Capped overrepresented identities at 20 images each before generating pairs. Identity 1871 had 530 images and dominated the pair distribution — without the cap, a disproportionate share of pairs involved that one identity, skewing both training and evaluation. Controlled via `max_images_per_identity` in configs/dataset.yaml — set to 999 for baseline (no cap), 20 for the improved version.
 
 ### Milestone 2 — How to run
 
@@ -87,6 +119,9 @@ python scripts/run_evaluation.py --val-run-id run2_val_selected_threshold --test
 ```
 
 **After data-centric improvement (runs 4-5):**
+
+> **Threshold selection rule (same as baseline):** Maximize balanced accuracy on the validation split. Update `selected_threshold` in configs/eval.yaml with the value printed by the sweep before running evaluation.
+
 ```
 # Set max_images_per_identity: 20 in configs/dataset.yaml first
 python scripts/lfw_ingestion_script.py
@@ -95,8 +130,19 @@ python scripts/threshold_sweep.py --run-id run4_sweep_val_post_cap --note "Sweep
 python scripts/run_evaluation.py --val-run-id run5_val_post_cap --test-run-id run5_test_post_cap --note "Run 5 - Evaluation after capping identities at 20 images per identity"
 ```
 
+**What each script produces:**
+- `threshold_sweep.py` → `outputs/roc_curve.png`, `outputs/sweep_results.json`, and a logged entry in `outputs/runs.jsonl`
+- `run_evaluation.py` → `outputs/confusion_matrix_val.png`, `outputs/confusion_matrix_test.png`, and two logged entries in `outputs/runs.jsonl`
 
+All 5 runs are appended to `outputs/runs.jsonl`. Each entry records: run ID, timestamp, commit hash, split, threshold, all metrics, and the note passed via `--note`.
 
+### Milestone 2 — Artifacts
 
-
-
+| Artifact | Location |
+|---|---|
+| Tracked run log (all 5 runs) | `outputs/runs.jsonl` |
+| ROC curve (val sweep) | `outputs/roc_curve.png` |
+| Confusion matrix — val split | `outputs/confusion_matrix_val.png` |
+| Confusion matrix — test split | `outputs/confusion_matrix_test.png` |
+| Evaluation report (PDF) | `reports/milestone2_report.pdf` |
+| Threshold sweep raw data | `outputs/sweep_results.json` (gitignored — regenerated by running sweep) |
