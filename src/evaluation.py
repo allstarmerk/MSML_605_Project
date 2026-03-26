@@ -104,3 +104,19 @@ def log_run(run_id, split, metric_name, threshold, metrics, note,
 
     print(f"Run '{run_id}' logged to {runs_path}")
     return record
+
+
+def log_errors(run_id, split, error_slice, errors_path="outputs/false_positives.jsonl"):
+    Path(errors_path).parent.mkdir(parents=True, exist_ok=True)
+    """try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+    except Exception:
+        commit = "unknown"
+    """
+    with open(errors_path, "a") as f:
+        f.write(json.dumps(error_slice.tolist()))
+
+    print(f"Errors from '{run_id} logged to {errors_path}")
