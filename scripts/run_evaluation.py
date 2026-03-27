@@ -61,7 +61,7 @@ def save_confusion_matrix(metrics, split_name, threshold, out_dir):
             ax.text(
                 j, i, str(cm[i, j]),
                 ha="center", va="center", fontsize=14,
-                color="white" if cm[i, j] > cm.max() / 2 else "black"
+                color="black"
             )
 
     ax.set_title(
