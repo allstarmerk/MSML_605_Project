@@ -21,7 +21,7 @@ pairs:  #This is how many pairs we will generate for each split.
   # Set to 999 for baseline (effectively no cap). Set to 4 for the improved version.
   # Identity 1871 has 530 images and dominates pairs without this cap.
   # Baseline runs 1-3 used 999. Improved runs 4-5 use 4.
-  max_images_per_identity: 999
+  max_images_per_identity: 4
 
 preprocessing:
   image_size: [128, 128,]  #resizing images to 128x128 the data set gives them as 250x250
