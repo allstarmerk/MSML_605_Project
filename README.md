@@ -123,11 +123,11 @@ python scripts/run_evaluation.py --val-run-id run2_val_selected_threshold --test
 > **Threshold selection rule (same as baseline):** Maximize balanced accuracy on the validation split. Update `selected_threshold` in configs/eval.yaml with the value printed by the sweep before running evaluation.
 
 ```
-# Set max_images_per_identity: 20 in configs/dataset.yaml first
+# Set max_images_per_identity: 4 in configs/dataset.yaml first
 python scripts/lfw_ingestion_script.py
-python scripts/threshold_sweep.py --run-id run4_sweep_val_post_cap --note "Sweep after capping identities at 20 images"
+python scripts/threshold_sweep.py --run-id run4_sweep_val_post_cap --note "Sweep after capping identities at 4 images"
 # Update selected_threshold in configs/eval.yaml with the value printed above
-python scripts/run_evaluation.py --val-run-id run5_val_post_cap --test-run-id run5_test_post_cap --note "Run 5 - Evaluation after capping identities at 20 images per identity"
+python scripts/run_evaluation.py --val-run-id run5_val_post_cap --test-run-id run5_test_post_cap --note "Run 5 - Evaluation after capping identities at 4 images per identity"
 ```
 
 **What each script produces:**
