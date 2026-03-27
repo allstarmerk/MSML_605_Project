@@ -24,3 +24,8 @@ Thumbs.db
 
 .vscode/
 .idea/
+
+
+outputs/sweep_results.json
+outputs/false_positives/
+outputs/false_negatives/

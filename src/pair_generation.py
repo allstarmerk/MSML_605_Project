@@ -12,25 +12,35 @@ import numpy as np
 # "num pairs" are the total pairs we are generating
 # "seed" the random seed defined in config file /config/dataset.yaml
 #We return the "pairs" indices into the iamge array and "pair labels" labels defined above line 7
-def generate_pairs(labels, num_pairs, positive_ratio, seed):
+def generate_pairs(labels, num_pairs, positive_ratio, seed, max_images_per_identity=999):  # 999 is a fallback default only — real value always comes from dataset.yaml via generate_all_splits()
     rng = np.random.default_rng(seed)
 
     #build identity to image indinces
     id_to_indices = {}
     for idx, label in enumerate(labels):
-        id_to_indices.setdefault(int(label), []).append(idx)
+        id_to_indices.setdefault(int(label), []).append(idx)   #is 2nd argument for setdefault supposed to be the image values?
 
+    # Data-centric improvement: cap each identity at max_images_per_identity before
+    # generating pairs. Without this, identity 1871 has 530 images and dominates
+    # the pair distribution. Capping makes pairs more balanced across identities.
+    # Controlled via dataset.yaml — set 999 for baseline, 20 for improved version.
+    id_to_indices = {
+        k: list(rng.choice(v, size=min(len(v), max_images_per_identity), replace=False))
+        for k, v in id_to_indices.items()
+    }
 
-    # only for 2+ images can form a pos pair
+    # only for 2+ images can form a pos pair  (only people with 2+ images of them can form pairs with pos labels)
     multi = {k: np.array(v) for k, v in id_to_indices.items() if len(v) >= 2}
     all_ids = list(id_to_indices.keys())
 
+    # this sets up the projected number of positive and negative pairs that this function will generate
     n_pos = int(num_pairs * positive_ratio)
     n_neg = num_pairs - n_pos
 
+    # instantiating variable for final set of pairs and corresponding labels
     pairs, pair_labels = [], []
     
-    #pos pairs same identity 2 images
+    #generates n_pos of pos pairs (same identity 2 images)
     pos_ids= list(multi.keys())
     for _ in range(n_pos):   #not using index hence naming i _
         identity = pos_ids[rng.integers(len(pos_ids))]
@@ -38,7 +48,7 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
         pairs.append([int(a), int(b)])
         pair_labels.append(1)
 
-    #neg pairs 2 diffrent identity 2 images
+    #generates n_neg of neg pairs (2 diffrent identity 2 images)
     for _ in  range(n_neg):
         i, j = rng.choice(len(all_ids), size = 2, replace=False)
         id_a, id_b = all_ids[i], all_ids[j]
@@ -47,11 +57,11 @@ def generate_pairs(labels, num_pairs, positive_ratio, seed):
         pairs.append([int(a), int(b)])
         pair_labels.append(0)
 
+    #changing pairs and pair_labels to np arrays for faster/easier operating in future use
     pairs = np.array(pairs, dtype=np.int32)
     pair_labels = np.array(pair_labels, dtype=np.int32)
 
     # shuffle 
-
     perm = rng.permutation(len(pairs))
     return pairs[perm], pair_labels[perm]
 
@@ -70,7 +80,8 @@ def save_pairs(pairs, pair_labels, split_name, pairs_dir):
         "negative_pairs": int((pair_labels == 0).sum()),
 
     }
-    #generate and save pairs for every split. Takes in -config(loaded yaml config dictionary) -splits_labled(dictionary of split names to a labled array) 
+
+#generate and save pairs for every split. Takes in -config(loaded yaml config dictionary) -splits_labled(dictionary of split names to a labled array) 
 def generate_all_splits(config, splits_labels): 
     pair_cfg = config["pairs"]
     pairs_dir = config["paths"]["pairs_dir"]
@@ -79,13 +90,19 @@ def generate_all_splits(config, splits_labels):
 
     for split_name, labels in splits_labels.items():
         num_pairs = pair_cfg["num_pairs_per_split"][split_name]
-        split_seed = base_seed + hash(split_name) % 1000  # derivin a deterministic seed split like project requirments call for 
+        # Using a hardcoded offset per split instead of hash(split_name) because Python's hash() is
+        # randomized on every interpreter startup (PYTHONHASHSEED), making hash-based seeds non-reproducible
+        # across runs. This fixed offset ensures the same seed is derived every time, satisfying the
+        # determinism requirement of Milestone 1.
+        split_offsets = {"train": 0, "val": 1, "test": 2}
+        split_seed = base_seed + split_offsets[split_name]
 
         pairs, pair_labels = generate_pairs(
             labels = labels,
             num_pairs = num_pairs,
             positive_ratio = pair_cfg["positive_ratio"],
             seed = split_seed,
+            max_images_per_identity = pair_cfg.get("max_images_per_identity", 999),
         )
         all_meta[split_name] = save_pairs(pairs, pair_labels, split_name, pairs_dir)
 
