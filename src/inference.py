@@ -13,5 +13,13 @@ def compute_confidence(score, threshold):
     else:
         denom = max(threshold + 1.0, 1e-10)
         return float(min(1.0, (threshold - score) / denom))
+#steps needed
+# Stage 1: Preprocessing
 
+ # Stage 2: Embedding generation
 
+ # Stage 3: Similarity scoring
+
+  # Stage 4: Threshold decision
+
+  # Stage 5: Confidence computation
