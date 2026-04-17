@@ -1,3 +1,24 @@
+# What this file does-
+#   This is the core of the Milestone 3 system. It takes two face images and runs
+#   them through the full verification pipeline, returning a same/different decision
+#   along with a score, and confidence value.
+
+#   compute_confidence(score, threshold)
+#       Takes the raw cosine similarity score and the threshold and
+#       returns a confidence value between 0.0 and 1.0. 0.0 means the score is
+#       right at the decision boundary (uncertain). 1.0 means maximum certainty.
+#       Works in both directions same and different decisions.
+
+#   run_inference(img1, img2, model, threshold, device)
+#       Runs the full 5-stage pipeline on a pair of images and returns a dict 
+
+# Pipeline stages :
+#  1  resize + normalize each image to a (3,160,160) tensor
+#  2 pass each tensor through FaceNet → 512-D vector
+#  3 cosine similarity between the two 512-D vectors
+#  4 score >= threshold → "same", else "different"
+#  5  compute_confidence(score, threshold)
+
 import time
 import numpy as np
 from src.embeddings import preprocess_image, embed_single
@@ -14,11 +35,7 @@ def compute_confidence(score, threshold):
         denom = max(threshold + 1.0, 1e-10)
         return float(min(1.0, (threshold - score) / denom))
 
-# Stage 1: Preprocessing
- # Stage 2: Embedding generation
- # Stage 3: Similarity scoring
-  # Stage 4: Threshold decision
-  # Stage 5: Confidence computation
+
 def run_inference(img1, img2, model, threshold, device="cpu"):
     
     t_total_start = time.perf_counter()
