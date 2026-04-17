@@ -30,12 +30,33 @@ def run_inference(img1, img2, model, threshold, device="cpu"):
     t_preprocess_ms = (time.perf_counter() - t0) * 1000
 
     # Stage 2: Embedding generation
-   
+    t0 = time.perf_counter()
+    emb1 = embed_single(tensor1, model, device)   # (512,)
+    emb2 = embed_single(tensor2, model, device)   # (512,)
+    t_embed_ms = (time.perf_counter() - t0) * 1000
 
     # Stage 3: Similarity scoring
-    
+    t0 = time.perf_counter()
+    score = float(cosine_similarity(emb1[None], emb2[None])[0])
+    t_score_ms = (time.perf_counter() - t0) * 1000
 
     # Stage 4: Threshold decision
-    
+    decision = "same" if score >= threshold else "different"
+
     # Stage 5: Confidence computation
-    
+    confidence = compute_confidence(score, threshold)
+
+    t_total_ms = (time.perf_counter() - t_total_start) * 1000
+
+    return {
+        "score":      round(score,      6),
+        "threshold":  threshold,
+        "decision":   decision,
+        "confidence": round(confidence, 6),
+        "latency_ms": {
+            "preprocess": round(t_preprocess_ms, 3),
+            "embed":      round(t_embed_ms,      3),
+            "score":      round(t_score_ms,      3),
+            "total":      round(t_total_ms,      3),
+        },
+    }
