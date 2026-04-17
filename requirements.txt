@@ -5,3 +5,7 @@ matplotlib
 PyYAML
 tqdm
 pytest
+Pillow
+facenet-pytorch
+torch
+torchvision
