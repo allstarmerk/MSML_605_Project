@@ -3,19 +3,19 @@
     "n_requests": 50,
     "workers": 4,
     "threshold": 0.397,
-    "synthetic": true
+    "synthetic": false
   },
   "results": {
     "total_requests": 50,
     "successful": 50,
     "errors": 0,
-    "wall_clock_s": 4.52,
-    "throughput_rps": 11.062,
+    "wall_clock_s": 3.95,
+    "throughput_rps": 12.657,
     "latency_ms": {
-      "mean": 355.66,
-      "p50": 295.72,
-      "p95": 1195.22,
-      "p99": 1204.34
+      "mean": 309.7,
+      "p50": 257.75,
+      "p95": 1022.21,
+      "p99": 1032.69
     }
   }
 }
