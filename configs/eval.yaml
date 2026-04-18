@@ -3,6 +3,14 @@
 # and the corresponding metrics. This will allow us to easily reference the best
 # performing threshold and its metrics for future evaluations and comparisons.
 
+# Embedding model configuration (Milestone 3)
+embedding:
+  model: "facenet_vggface2"   
+  input_size: 160             # expected input size (pixels)
+  output_dim: 512             # embedding dim
+  device: "cpu"               
+  batch_size: 64              # batch size used when embedding all split images
+
 threshold_sweep:
   min: 0.0
   max: 1.0
