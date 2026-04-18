@@ -235,14 +235,12 @@ python scripts/threshold_sweep.py --run-id run6_sweep_val_facenet --note "Thresh
 python scripts/run_evaluation.py --val-run-id run7_val_facenet --test-run-id run8_test_facenet --note "FaceNet embedding evaluation"
 ```
 
-**Single-pair CLI inference:**
-*Note: Replace "path/to/face1.jpg" and "path/to/face2.jpg" with the directory paths to your own images*
+**Single-pair CLI inference; [replace "path/to/face1.jpg" and "path/to/face2.jpg" with the directory paths to your own images]:**
 ```
 python scripts/infer.py --img1 path/to/face1.jpg --img2 path/to/face2.jpg
 ```
 
-**Batch inference (CSV file with img1,img2 per row):**
-*Note: Replace "path/to/pairs.csv" with the path to your own csv file of images with the format above*
+**Batch inference (CSV file with img1,img2 per row); [replace "path/to/pairs.csv" with the path to your own csv file of images]:**
 ```
 python scripts/infer.py --batch path/to/pairs.csv
 ```
