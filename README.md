@@ -105,7 +105,7 @@ Builds a reproducible evaluation loop on top of the Milestone 1 pipeline. Includ
 
 **Threshold selection rule:** Maximize balanced accuracy on the validation split. Balanced accuracy averages TPR and TNR, making it robust to class imbalance. The selected threshold is stored in `configs/eval.yaml` under `selected_threshold`. It is chosen on val and then applied to test without further tuning.
 
-**Data-centric improvement:** Capped overrepresented identities at 20 images each before generating pairs. Identity 1871 had 530 images and dominated the pair distribution — without the cap, a disproportionate share of pairs involved that one identity, skewing both training and evaluation. Controlled via `max_images_per_identity` in configs/dataset.yaml — set to 999 for baseline (no cap), 20 for the improved version.
+**Data-centric improvement:** Capped overrepresented identities at 4 images each before generating pairs. Identity 1871 had 530 images and dominated the pair distribution — without the cap, a disproportionate share of pairs involved that one identity, skewing both training and evaluation. Controlled via `max_images_per_identity` in configs/dataset.yaml — set to 999 for baseline (no cap), 4 for the improved version.
 
 ### Milestone 2 — How to run
 
