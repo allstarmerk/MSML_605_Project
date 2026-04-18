@@ -1,7 +1,11 @@
 import sys
 import os
+import time
+import json
+import argparse
 import numpy as np
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_path)
@@ -24,6 +28,17 @@ def load_lfw_pairs(n_pairs, seed=42):
     selected = pairs[idx]
     tasks = [(val_images[selected[i, 0]], val_images[selected[i, 1]])
              for i in range(len(selected))]
+    return tasks
+
+
+def make_synthetic_pairs(n_pairs, seed=42):
+    # generates random (H, W, C) uint8 arrays — no dataset required
+    rng = np.random.default_rng(seed)
+    tasks = []
+    for _ in range(n_pairs):
+        img1 = (rng.random((62, 47, 3)) * 255).astype(np.uint8)
+        img2 = (rng.random((62, 47, 3)) * 255).astype(np.uint8)
+        tasks.append((img1, img2))
     return tasks
 
 
