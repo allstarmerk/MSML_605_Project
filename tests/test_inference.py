@@ -94,3 +94,22 @@ def test_confidence_always_in_range():
         c = compute_confidence(score, threshold=0.5)
         assert 0.0 <= c <= 1.0, f"confidence out of range for score={score}: got {c}"
 
+
+# cosine similarity on toy embeddings 
+
+def test_cosine_identical_embeddings():
+    # identical embeddings → cosine similarity = 1.0
+    rng = np.random.default_rng(0)
+    emb = rng.random((1, 512)).astype(np.float32)
+    sim = cosine_similarity(emb, emb)
+    assert np.allclose(sim, 1.0, atol=1e-5)
+
+
+def test_cosine_orthogonal_embeddings():
+    # orthogonal embeddings → cosine similarity = 0.0
+    a = np.zeros((1, 4), dtype=np.float32); a[0, 0] = 1.0
+    b = np.zeros((1, 4), dtype=np.float32); b[0, 1] = 1.0
+    sim = cosine_similarity(a, b)
+    assert np.allclose(sim, 0.0, atol=1e-5)
+
+
