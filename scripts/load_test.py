@@ -103,7 +103,7 @@ def main():
     p95         = float(np.percentile(latencies_sorted, 95))  if latencies_sorted else 0.0
     p99         = float(np.percentile(latencies_sorted, 99))  if latencies_sorted else 0.0
 
-    print(f"── Load Test Results ─────────────────────────────")
+    print(f"-- Load Test Results -----------------------------")
     print(f"  Total requests:  {args.n_requests}")
     print(f"  Successful:      {n_success}")
     print(f"  Errors:          {errors}")
