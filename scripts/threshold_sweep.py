@@ -9,18 +9,19 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import yaml
 
-# Sweeps thresholds on the val split, and will tell you what to set the
-# "selected_threshold" that we will set in eval.yaml to
+# Sweeps thresholds on the val split using FaceNet embeddings (Milestone 3).
+# Scores all val pairs once with the embedding model, then varies only the
+# threshold to find the best balanced accuracy.
 # Pass a run ID via --run-id argument, for example:
-#   python scripts/threshold_sweep.py --run-id run1_sweep_val_baseline
-#   python scripts/threshold_sweep.py --run-id run4_sweep_val_post_cap
+#   python scripts/threshold_sweep.py --run-id run6_sweep_val_facenet
 
 root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_path)
 
 from src.data_ingestion import load_config, load_lfw
+from src.embeddings import load_model, embed_images
 from src.evaluation import (
-    score_pairs_cosine,
+    score_pairs_from_embeddings,
     apply_threshold,
     compute_metrics,
     log_run,
@@ -115,6 +116,8 @@ def main():
         eval_cfg["threshold_sweep"]["steps"],
     )
 
+    emb_cfg = eval_cfg["embedding"]
+
     print("Loading LFW dataset...")
     splits, _ = load_lfw(config)
     images = splits["val"][0]
@@ -124,9 +127,17 @@ def main():
     pairs, labels = load_pairs(pairs_dir, "val")
     validate_pairs(pairs, labels, "val")
 
-    # score all pairs once — scores stay fixed for the entire sweep
-    print("Scoring pairs...")
-    scores = score_pairs_cosine(images, pairs)
+    # embed all val images once, then score pairs from embeddings
+    print(f"Loading FaceNet model ({emb_cfg['model']})...")
+    model = load_model(device=emb_cfg["device"])
+
+    print(f"Computing embeddings for {len(images)} val images...")
+    embeddings = embed_images(images, model,
+                              batch_size=emb_cfg["batch_size"],
+                              device=emb_cfg["device"])
+
+    print("Scoring pairs from embeddings...")
+    scores = score_pairs_from_embeddings(embeddings, pairs)
     validate_scores(scores, pairs)
 
     # run the sweep across all threshold values
@@ -136,7 +147,7 @@ def main():
     # pick best threshold by maximizing balanced accuracy on val split
     best = max(results, key=lambda r: r["balanced_accuracy"])
 
-    print(f"\n── Sweep Results ──────────────────────────────")
+    print(f"\n-- Sweep Results ------------------------------")
     print(f"  Best threshold:    {best['threshold']:.4f}")
     print(f"  Balanced Accuracy: {best['balanced_accuracy']:.4f}")
     print(f"  TPR:               {best['true_positive_rate']:.4f}")

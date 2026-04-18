@@ -15,6 +15,14 @@ def score_pairs_cosine(images, pairs):
     return cosine_similarity(a, b)  # returns (N,) array in range [-1, 1]
 
 
+def score_pairs_from_embeddings(embeddings, pairs):
+    # score pairs using pre-computed embedding vectors (N, D)
+    # used in Milestone 3 in place of score_pairs_cosine
+    a = embeddings[pairs[:, 0]]
+    b = embeddings[pairs[:, 1]]
+    return cosine_similarity(a, b)
+
+
 def score_pairs_euclidean(images, pairs):
     # compute euclidean distance for every pair
     # lower = more similar, higher = less similar
