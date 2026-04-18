@@ -18,7 +18,7 @@ threshold_sweep:
 
 # Rule: pick the threshold that maximizes balanced accuracy on the val split.
 # Update this value after running scripts/threshold_sweep.py
-selected_threshold: 0.9196
+selected_threshold: 0.3970
 
 # Scoring method used for pair evaluation
 score_metric: "cosine"              # options: "cosine" or "euclidean"

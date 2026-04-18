@@ -1,0 +1,21 @@
+{
+  "config": {
+    "n_requests": 50,
+    "workers": 4,
+    "threshold": 0.397,
+    "synthetic": true
+  },
+  "results": {
+    "total_requests": 50,
+    "successful": 50,
+    "errors": 0,
+    "wall_clock_s": 2.117,
+    "throughput_rps": 23.621,
+    "latency_ms": {
+      "mean": 165.15,
+      "p50": 165.41,
+      "p95": 183.33,
+      "p99": 193.9
+    }
+  }
+}
