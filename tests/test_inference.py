@@ -129,3 +129,27 @@ def test_threshold_arg_rejects_string():
         parser.parse_args(["--threshold", "notanumber"])
 
 
+# Smoke test: full inference pipeline on synthetic images
+# Uses a tiny toy model so it runs fast with no network or LFW data needed.
+
+class _ToyEmbedder(torch.nn.Module):
+    def forward(self, x):
+        batch = x.shape[0]
+        return torch.ones(batch, 512) / (512 ** 0.5)
+
+
+def test_inference_smoke():
+    rng = np.random.default_rng(42)
+    model = _ToyEmbedder()
+    img1 = (rng.random((62, 47, 3)) * 255).astype(np.uint8)
+    img2 = (rng.random((62, 47, 3)) * 255).astype(np.uint8)
+
+    result = run_inference(img1, img2, model, threshold=0.5)
+
+    assert set(result.keys()) >= {"score", "threshold", "decision", "confidence", "latency_ms"}
+    assert result["decision"] in ("same", "different")
+    assert 0.0 <= result["confidence"] <= 1.0
+    assert result["latency_ms"]["total"] > 0
+    # identical embeddings → score ≈ 1.0 → decision must be "same"
+    assert result["decision"] == "same"
+    assert result["score"] == pytest.approx(1.0, abs=1e-4)
