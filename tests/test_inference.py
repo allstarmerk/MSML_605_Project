@@ -13,7 +13,7 @@ from src.similarity import cosine_similarity
 
 
 
-# This file tests the Milestone 3 inference pipeline. 
+# This file tests the Milestone 3 inference pipeline.
 #
 #   1. compute_confidence  — tests the function that turns a raw score into a
 #                            human-readable confidence value should between 0 to 1. Not to be confused with the input going into compute_confidence (cosine similarity ranges -1 to 1 raw score). Output is confidence it ranges from 0-1 and we need to test the diffrent test cases bellow
@@ -68,5 +68,29 @@ for score in test_scores:
 print(f"Confidence values all remain in range 0 <= con_value <= 1: {cond}")
 
 
+# ── Formal pytest test functions (same logic as above, wrapped for pytest)
+# The code above explores and prints the values manually.
+# The functions below turn that same logic into actual pytest tests so the
+# test suite can verify these conditions automatically on every run.
 
+def test_confidence_at_boundary():
+    assert compute_confidence(0.5, threshold=0.5) == 0.0
+
+
+def test_confidence_same_at_max():
+    assert compute_confidence(1.0, threshold=0.5) == 1.0
+
+
+def test_confidence_different_at_max():
+    assert compute_confidence(-1.0, threshold=0.5) == pytest.approx(1.0, abs=1e-6)
+
+
+def test_confidence_increases_away_from_boundary():
+    assert compute_confidence(0.9, 0.5) > compute_confidence(0.6, 0.5)
+
+
+def test_confidence_always_in_range():
+    for score in [-1.0, -0.5, 0.0, 0.3, 0.8, 1.0]:
+        c = compute_confidence(score, threshold=0.5)
+        assert 0.0 <= c <= 1.0, f"confidence out of range for score={score}: got {c}"
 

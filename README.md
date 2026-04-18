@@ -284,7 +284,8 @@ docker run face-verifier pytest tests/
 
 ### Milestone 3 — Artifacts
 
-
+| Artifact | Location |
+|---|---|
 | Embedding module | `src/embeddings.py` |
 | Inference pipeline | `src/inference.py` |
 | CLI entrypoint | `scripts/infer.py` |
