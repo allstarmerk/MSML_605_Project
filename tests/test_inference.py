@@ -113,3 +113,19 @@ def test_cosine_orthogonal_embeddings():
     assert np.allclose(sim, 0.0, atol=1e-5)
 
 
+# CLI argument validation 
+
+def test_threshold_arg_accepts_float():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--threshold", type=float, default=None)
+    args = parser.parse_args(["--threshold", "0.82"])
+    assert args.threshold == pytest.approx(0.82)
+
+
+def test_threshold_arg_rejects_string():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--threshold", type=float, default=None)
+    with pytest.raises(SystemExit):
+        parser.parse_args(["--threshold", "notanumber"])
+
+
