@@ -147,7 +147,7 @@ def main():
     # pick best threshold by maximizing balanced accuracy on val split
     best = max(results, key=lambda r: r["balanced_accuracy"])
 
-    print(f"\n── Sweep Results ──────────────────────────────")
+    print(f"\n-- Sweep Results ------------------------------")
     print(f"  Best threshold:    {best['threshold']:.4f}")
     print(f"  Balanced Accuracy: {best['balanced_accuracy']:.4f}")
     print(f"  TPR:               {best['true_positive_rate']:.4f}")

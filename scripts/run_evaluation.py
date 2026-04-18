@@ -79,7 +79,7 @@ def save_confusion_matrix(metrics, split_name, threshold, out_dir):
 
 def evaluate_split(split_name, images, embeddings, pairs, labels,
                    threshold, out_dir, run_id, note):
-    print(f"\n── Evaluating {split_name} split ──────────────────")
+    print(f"\n-- Evaluating {split_name} split ------------------")
 
     # validate all inputs before doing any computation
     validate_pairs(pairs, labels, split_name)
