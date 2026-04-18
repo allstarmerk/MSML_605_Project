@@ -9,15 +9,16 @@ from pathlib import Path
 import yaml
 
 # Loads the selected threshold from eval.yaml and evaluates on both the val
-# and test splits. Saves confusion matrices and logs runs 2 and 3.
-# we will run this after threshold_sweep.py and after updating selected_threshold in eval.yaml
+# and test splits using FaceNet embeddings (Milestone 3).
+# Run after threshold_sweep.py and after updating selected_threshold in eval.yaml.
 
 root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_path)
 
 from src.data_ingestion import load_config, load_lfw
+from src.embeddings import load_model, embed_images
 from src.evaluation import (
-    score_pairs_cosine,
+    score_pairs_from_embeddings,
     apply_threshold,
     compute_metrics,
     log_run,
@@ -76,7 +77,7 @@ def save_confusion_matrix(metrics, split_name, threshold, out_dir):
     print(f"Confusion matrix saved to {out_path}")
 
 
-def evaluate_split(split_name, images, pairs, labels,
+def evaluate_split(split_name, images, embeddings, pairs, labels,
                    threshold, out_dir, run_id, note):
     print(f"\n── Evaluating {split_name} split ──────────────────")
 
@@ -84,8 +85,8 @@ def evaluate_split(split_name, images, pairs, labels,
     validate_pairs(pairs, labels, split_name)
     validate_threshold(threshold)
 
-    # score every pair using cosine similarity
-    scores = score_pairs_cosine(images, pairs)
+    # score every pair from pre-computed FaceNet embeddings
+    scores = score_pairs_from_embeddings(embeddings, pairs)
     validate_scores(scores, pairs)
 
     # convert scores to binary same/different decisions using the threshold
@@ -128,8 +129,7 @@ def evaluate_split(split_name, images, pairs, labels,
 
 def main():
     # pass run IDs via --val-run-id and --test-run-id arguments, for example:
-    # Baseline:  python scripts/run_evaluation.py --val-run-id run2_val_selected_threshold --test-run-id run3_test_final_baseline
-    # Post-cap:  python scripts/run_evaluation.py --val-run-id run5_val_post_cap --test-run-id run5_test_post_cap
+    # python scripts/run_evaluation.py --val-run-id run7_val_facenet --test-run-id run8_test_facenet
     parser = argparse.ArgumentParser()
     parser.add_argument("--val-run-id",  type=str, default="eval_val",
                         help="Run ID for the val split evaluation")
@@ -147,6 +147,7 @@ def main():
 
     pairs_dir = config["paths"]["pairs_dir"]
     threshold = eval_cfg["selected_threshold"]
+    emb_cfg   = eval_cfg["embedding"]
     out_dir   = Path("outputs")
     out_dir.mkdir(exist_ok=True)
 
@@ -154,12 +155,20 @@ def main():
     print("Loading LFW dataset...")
     splits, _ = load_lfw(config)
 
-    # evaluate val split at selected threshold and record confusion matrix
+    print(f"Loading FaceNet model ({emb_cfg['model']})...")
+    model = load_model(device=emb_cfg["device"])
+
+    # evaluate val split
     validate_pair_files(pairs_dir, "val")
     val_pairs, val_labels = load_pairs(pairs_dir, "val")
+    print(f"Computing embeddings for val split ({len(splits['val'][0])} images)...")
+    val_embeddings = embed_images(splits["val"][0], model,
+                                  batch_size=emb_cfg["batch_size"],
+                                  device=emb_cfg["device"])
     evaluate_split(
         split_name="val",
         images=splits["val"][0],
+        embeddings=val_embeddings,
         pairs=val_pairs,
         labels=val_labels,
         threshold=threshold,
@@ -168,13 +177,17 @@ def main():
         note=args.note + f" Val split. Threshold={threshold:.4f}.",
     )
 
-    # evaluate test split at the locked threshold
-    # threshold is NOT tuned on test — it is locked from the val sweep
+    # evaluate test split — threshold is NOT tuned on test
     validate_pair_files(pairs_dir, "test")
     test_pairs, test_labels = load_pairs(pairs_dir, "test")
+    print(f"Computing embeddings for test split ({len(splits['test'][0])} images)...")
+    test_embeddings = embed_images(splits["test"][0], model,
+                                   batch_size=emb_cfg["batch_size"],
+                                   device=emb_cfg["device"])
     evaluate_split(
         split_name="test",
         images=splits["test"][0],
+        embeddings=test_embeddings,
         pairs=test_pairs,
         labels=test_labels,
         threshold=threshold,
