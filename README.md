@@ -297,3 +297,40 @@ docker run face-verifier pytest tests/
 | ROC curve (FaceNet sweep) | `outputs/roc_curve.png` |
 | Confusion matrices | `outputs/confusion_matrix_val.png`, `outputs/confusion_matrix_test.png` |
 | Run log (all runs) | `outputs/runs.jsonl` |
+
+---
+
+## Milestone 4 — System Card, Profiling, and Final Release
+
+The final milestone freezes the system at threshold 0.3970, documents it in a System Card, profiles per-stage inference latency, and packages everything for reproducible handoff.
+
+**Final metrics (test split, Run 11):**
+
+| Metric | Value |
+|---|---|
+| Balanced Accuracy | 0.9790 |
+| True Positive Rate (TPR) | 0.9740 |
+| False Positive Rate (FPR) | 0.0160 |
+| F1 Score | 0.9789 |
+
+**Final release tag:** `v1.0-final`
+
+### Milestone 4 — How to Run
+
+**Run the profiling script:**
+```bash
+python scripts/profile_inference.py
+```
+Outputs `outputs/profiling_results.json` with per-stage latency (50 runs, 10 warmup) and batch-size sensitivity (batch sizes 1–64, 128 images, 3 repeats).
+
+**Full reproducibility steps** are in `reports/reproducibility_checklist.md`. All commands run from repo root after cloning and installing requirements.
+
+### Milestone 4 — Artifacts
+
+| Artifact | Location |
+|---|---|
+| System Card | `reports/system_card.md` |
+| Profiling Report | `reports/profiling_report.md` |
+| Reproducibility Checklist | `reports/reproducibility_checklist.md` |
+| Profiling script | `scripts/profile_inference.py` |
+| Profiling results (JSON) | `outputs/profiling_results.json` |
