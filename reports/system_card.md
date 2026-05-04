@@ -98,8 +98,7 @@ obstruction blocking the subject's face and the other one doesn't.
 These failures could possibly stem from imperfections during the image preprocessing since the resolution of the
 images lowers and the cropping of the images such that the subject's hairline is cropped out.
 
-For visual examples of where the model has failed, see the Appendix of the accompanying PDF report which displays
-examples of pairs incorrectly marked Negative and pairs incorrectly marked Positive.
+Visual examples of failure cases are shown in the Appendix below.
 
 ---
 
@@ -173,3 +172,37 @@ will reproduce the evaluation results, CLI behavior, and load test results docum
 - Run log: `outputs/runs.jsonl`
 - Confusion matrices: `outputs/confusion_matrix_val.png`, `outputs/confusion_matrix_test.png`
 - Load test results: `outputs/load_test_results.json`
+
+---
+
+## Appendix — Failure Case Examples (Test Split)
+
+All examples are from the test split at threshold 0.3970. Each image shows a side-by-side pair: left image and right image as fed to the model.
+
+### False Positives — Different people classified as the same person (8 total)
+
+These pairs scored ≥ 0.3970 but are actually two different people. Common patterns: similar skin tone, similar facial structure, or similar lighting/photography conditions between the two subjects.
+
+![FP pair 0](../outputs/false_positives/run_test_final/composites/pair0.jpg)
+![FP pair 1](../outputs/false_positives/run_test_final/composites/pair1.jpg)
+![FP pair 2](../outputs/false_positives/run_test_final/composites/pair2.jpg)
+![FP pair 3](../outputs/false_positives/run_test_final/composites/pair3.jpg)
+![FP pair 4](../outputs/false_positives/run_test_final/composites/pair4.jpg)
+![FP pair 5](../outputs/false_positives/run_test_final/composites/pair5.jpg)
+![FP pair 6](../outputs/false_positives/run_test_final/composites/pair6.jpg)
+![FP pair 7](../outputs/false_positives/run_test_final/composites/pair7.jpg)
+
+### False Negatives — Same person classified as different people (13 total, 10 shown)
+
+These pairs scored < 0.3970 but are actually the same person. Common patterns: significantly different lighting, headwear or accessories, facial obstructions, or large changes in expression or age between the two images.
+
+![FN pair 0](../outputs/false_negatives/run_test_final/composites/pair0.jpg)
+![FN pair 1](../outputs/false_negatives/run_test_final/composites/pair1.jpg)
+![FN pair 2](../outputs/false_negatives/run_test_final/composites/pair2.jpg)
+![FN pair 3](../outputs/false_negatives/run_test_final/composites/pair3.jpg)
+![FN pair 4](../outputs/false_negatives/run_test_final/composites/pair4.jpg)
+![FN pair 5](../outputs/false_negatives/run_test_final/composites/pair5.jpg)
+![FN pair 6](../outputs/false_negatives/run_test_final/composites/pair6.jpg)
+![FN pair 7](../outputs/false_negatives/run_test_final/composites/pair7.jpg)
+![FN pair 8](../outputs/false_negatives/run_test_final/composites/pair8.jpg)
+![FN pair 9](../outputs/false_negatives/run_test_final/composites/pair9.jpg)
